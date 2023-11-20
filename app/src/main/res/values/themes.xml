@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Ac_04_capturar_dados_de_cadastro" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
