@@ -6,6 +6,7 @@ import android.view.Gravity
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Start
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -539,10 +540,12 @@ fun Tela() {
 
 //Criando um botao para enviar o codigo de verificação e verificar algumas informações preenchidas
                 OutlinedButton(
+                    modifier = Modifier.align(Alignment.Start),
                     colors = ButtonDefaults.outlinedButtonColors(
                         containerColor = LightGray
                     ), onClick = {
 // Se todas essas validações passar ele muda para a tela 2
+
                         if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
                                 nome
                             ) && celular.length == 9 && celular[0] == '9'
@@ -554,37 +557,100 @@ fun Tela() {
 //Habilita o botão somente se o email for valido
                     enabled = isValid(email)
                 ) {
-                    Text("Verifica E-Mail", color = Color.Black)
+                    Text("Salvar Dados", color = Color.Black)
+                }
+
+                OutlinedButton(
+                    modifier = Modifier.align(Alignment.Start),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = LightGray
+                    ), onClick = {
+// Se todas essas validações passar ele muda para a tela 2
+
+                        if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
+                                nome
+                            ) && celular.length == 9 && celular[0] == '9'
+                        ) {
+                            etapa++
+                        }
+
+                    },
+//Habilita o botão somente se o email for valido
+                    enabled = isValid(email)
+                ) {
+                    Text("Atualizar Dados", color = Color.Black)
+                }
+
+                OutlinedButton(
+                    modifier = Modifier.align(Alignment.Start),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = LightGray
+                    ), onClick = {
+// Se todas essas validações passar ele muda para a tela 2
+
+                        if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
+                                nome
+                            ) && celular.length == 9 && celular[0] == '9'
+                        ) {
+                            etapa++
+                        }
+
+                    },
+//Habilita o botão somente se o email for valido
+                    enabled = isValid(email)
+                ) {
+                    Text("Buscar Dados", color = Color.Black)
+                }
+
+                OutlinedButton(
+                    modifier = Modifier.align(Alignment.Start),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = LightGray
+                    ), onClick = {
+// Se todas essas validações passar ele muda para a tela 2
+
+                        if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
+                                nome
+                            ) && celular.length == 9 && celular[0] == '9'
+                        ) {
+                            etapa++
+                        }
+
+                    },
+//Habilita o botão somente se o email for valido
+                    enabled = isValid(email)
+                ) {
+                    Text("Deletar Dados", color = Color.Black)
                 }
             }
 
 //Se a etapa for igual a 2 roda essas funções
             if (etapa == 2) {
-// Gerar um numero aleatorio
-                var numeroAleatorio = gerarNumero()
-// Disparar um e-mail
-                if (dispararEmail(numeroAleatorio = numeroAleatorio, email = emailValido)) {
-// Aguardar digitação do código correto
-                    CapturaRetorno(emailValido, numeroAleatorio) {
-                        if (it) {
-                            etapa++
-                        } else {
-                            etapa--
-                        }
-                    }
-                } else {
-                    var myContext = LocalContext.current
-                    showToast(myContext, "Erro ao disparar email. Tente mais tarde.")
-                    etapa--
-                }
+//// Gerar um numero aleatorio
+//                var numeroAleatorio = gerarNumero()
+//// Disparar um e-mail
+//                if (dispararEmail(numeroAleatorio = numeroAleatorio, email = emailValido)) {
+//// Aguardar digitação do código correto
+//                    CapturaRetorno(emailValido, numeroAleatorio) {
+//                        if (it) {
+//                            etapa++
+//                        } else {
+//                            etapa--
+//                        }
+//                    }
+//                } else {
+//                    var myContext = LocalContext.current
+//                    showToast(myContext, "Erro ao disparar email. Tente mais tarde.")
+//                    etapa--
+//                }
             }
 
             if (etapa == 3) {
 // Exibir mensagem de sucesso
-                CapturaComSucesso(emailValido) {
-                    emailValido = ""
-                    etapa = 1
-                }
+//                CapturaComSucesso(emailValido) {
+//                    emailValido = ""
+//                    etapa = 1
+//                }
             }
         }
     }
@@ -592,23 +658,23 @@ fun Tela() {
 
 
 //Função para a etapa 3
-@Composable
-fun CapturaComSucesso(email: String, trataRetorno: () -> Unit) {
-    Text(
-        "Email $email validado com sucesso",
-        fontSize = 20.sp,
-        textAlign = TextAlign.Center,
-        color = Color.White
-    )
-
-    Spacer(modifier = Modifier.padding(16.dp))
-
-    Button(onClick = {
-        trataRetorno()
-    }) {
-        Text("Voltar")
-    }
-}
+//@Composable
+//fun CapturaComSucesso(email: String, trataRetorno: () -> Unit) {
+//    Text(
+//        "Email $email validado com sucesso",
+//        fontSize = 20.sp,
+//        textAlign = TextAlign.Center,
+//        color = Color.White
+//    )
+//
+//    Spacer(modifier = Modifier.padding(16.dp))
+//
+//    Button(onClick = {
+//        trataRetorno()
+//    }) {
+//        Text("Voltar")
+//    }
+//}
 
 
 //Função que valida se o nome é valido ou não
@@ -703,143 +769,143 @@ fun isValid(email: String): Boolean {
 }
 
 //Gera um numero aleatorio para o codigo de verificação
-fun gerarNumero(): String {
-    var auxiliar = ""
-
-    for (i in 1..6) {
-        auxiliar += Random.nextInt(10)
-    }
-    return auxiliar
-}
+//fun gerarNumero(): String {
+//    var auxiliar = ""
+//
+//    for (i in 1..6) {
+//        auxiliar += Random.nextInt(10)
+//    }
+//    return auxiliar
+//}
 
 
 //Utiliza a api da sendgrid para disparar o email para o usuario
-fun dispararEmail(email: String, numeroAleatorio: String): Boolean {
-    // Implementação da Rotina de envio do SendGrid
-    val myApiKey = "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"
-    val url = URL("https://api.sendgrid.com/v3/mail/send")
-    val urlConnection = url.openConnection() as HttpURLConnection
-    var response = ""
-    var bOk = true
-
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
-            // Configurar a conexão para o método POST
-            urlConnection.requestMethod = "POST"
-            urlConnection.doOutput = true
-
-            // Adicionar cabeçalhos
-            urlConnection.setRequestProperty("Authorization", "Bearer $myApiKey")
-            urlConnection.setRequestProperty("Content-Type", "application/json")
-
-            // Adicionar o corpo da requisição
-            val postData = """
-               {
-                   "personalizations": [
-                   {
-                       "to": [
-                               {
-                                   "email": "$email"
-                               }
-                           ],
-                       "subject": "Confirmação de E-Mail"
-                   }
-                   ],
-                   "content": [
-                   {
-                       "type": "text/plain",
-                       "value": "Seu código de validação é $numeroAleatorio"
-                   }
-               ]   ,
-               "from": {
-                   "email": "alexandre.ricardo@gmail.com",
-                   "name": "Validador de E-Mais"
-               },
-               "reply_to": {
-                   "email": "noreply@gmail.com",
-                   "name": "No Reply"
-               }
-           }
-           """.trimIndent()
-
-            val out = BufferedOutputStream(urlConnection.outputStream)
-            val writer = OutputStreamWriter(out, "UTF-8")
-            writer.write(postData)
-            writer.flush()
-            writer.close()
-            out.close()
-
-            // Obter a resposta do servidor
-            val inputStream = urlConnection.inputStream
-            response =
-                inputStream.bufferedReader().use { it.readText() } // Lidar com a resposta aqui
-        } catch (e: Exception) {
-            bOk = false
-        } finally {
-            urlConnection.disconnect()
-        }
-    }
-    return bOk
-}
+//fun dispararEmail(email: String, numeroAleatorio: String): Boolean {
+//    // Implementação da Rotina de envio do SendGrid
+//    val myApiKey = "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"
+//    val url = URL("https://api.sendgrid.com/v3/mail/send")
+//    val urlConnection = url.openConnection() as HttpURLConnection
+//    var response = ""
+//    var bOk = true
+//
+//    CoroutineScope(Dispatchers.IO).launch {
+//        try {
+//            // Configurar a conexão para o método POST
+//            urlConnection.requestMethod = "POST"
+//            urlConnection.doOutput = true
+//
+//            // Adicionar cabeçalhos
+//            urlConnection.setRequestProperty("Authorization", "Bearer $myApiKey")
+//            urlConnection.setRequestProperty("Content-Type", "application/json")
+//
+//            // Adicionar o corpo da requisição
+//            val postData = """
+//               {
+//                   "personalizations": [
+//                   {
+//                       "to": [
+//                               {
+//                                   "email": "$email"
+//                               }
+//                           ],
+//                       "subject": "Confirmação de E-Mail"
+//                   }
+//                   ],
+//                   "content": [
+//                   {
+//                       "type": "text/plain",
+//                       "value": "Seu código de validação é $numeroAleatorio"
+//                   }
+//               ]   ,
+//               "from": {
+//                   "email": "alexandre.ricardo@gmail.com",
+//                   "name": "Validador de E-Mais"
+//               },
+//               "reply_to": {
+//                   "email": "noreply@gmail.com",
+//                   "name": "No Reply"
+//               }
+//           }
+//           """.trimIndent()
+//
+//            val out = BufferedOutputStream(urlConnection.outputStream)
+//            val writer = OutputStreamWriter(out, "UTF-8")
+//            writer.write(postData)
+//            writer.flush()
+//            writer.close()
+//            out.close()
+//
+//            // Obter a resposta do servidor
+//            val inputStream = urlConnection.inputStream
+//            response =
+//                inputStream.bufferedReader().use { it.readText() } // Lidar com a resposta aqui
+//        } catch (e: Exception) {
+//            bOk = false
+//        } finally {
+//            urlConnection.disconnect()
+//        }
+//    }
+//    return bOk
+//}
 
 //Tela 2 da aplicação onde pede o codigo de verificação para a pessoa
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CapturaRetorno(email: String, numeroAleatorio: String, resultadoCaptura: (Boolean) -> Unit) {
-    val myContext = LocalContext.current
-
-    var codigoDigitado by remember {
-        mutableStateOf("")
-    }
-    Text(
-        "Codigo de Validação Enviado.",
-        fontSize = 20.sp,
-        textAlign = TextAlign.Center,
-        color = Color.White
-    )
-
-    Spacer(modifier = Modifier.padding(16.dp))
-
-    Text(
-        "Foi enviado um código de verificação para o e-mail $email. Verifique sua caixa postal e informe abaixo o código recebido",
-        fontSize = 12.sp,
-        textAlign = TextAlign.Center,
-        color = Color.White
-    )
-
-    Spacer(modifier = Modifier.padding(16.dp))
-
-    TextField(value = codigoDigitado,
-        onValueChange = {
-            if (it.length <= 6) {
-                codigoDigitado = it
-            }
-        },
-        label = { Text("Código de Verificação") },
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-    )
-
-    Spacer(modifier = Modifier.padding(16.dp))
-
-    Row(
-        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Button(onClick = {
-            if (codigoDigitado == numeroAleatorio) {
-                resultadoCaptura(true)
-            } else {
-                showToast(myContext, "Código inválido. $numeroAleatorio")
-            }
-        }) {
-            Text("Validar Código")
-        }
-        Button(onClick = {
-            resultadoCaptura(false)
-        }) {
-            Text("Reenviar Código")
-        }
-    }
-}
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun CapturaRetorno(email: String, numeroAleatorio: String, resultadoCaptura: (Boolean) -> Unit) {
+//    val myContext = LocalContext.current
+//
+//    var codigoDigitado by remember {
+//        mutableStateOf("")
+//    }
+//    Text(
+//        "Codigo de Validação Enviado.",
+//        fontSize = 20.sp,
+//        textAlign = TextAlign.Center,
+//        color = Color.White
+//    )
+//
+//    Spacer(modifier = Modifier.padding(16.dp))
+//
+//    Text(
+//        "Foi enviado um código de verificação para o e-mail $email. Verifique sua caixa postal e informe abaixo o código recebido",
+//        fontSize = 12.sp,
+//        textAlign = TextAlign.Center,
+//        color = Color.White
+//    )
+//
+//    Spacer(modifier = Modifier.padding(16.dp))
+//
+//    TextField(value = codigoDigitado,
+//        onValueChange = {
+//            if (it.length <= 6) {
+//                codigoDigitado = it
+//            }
+//        },
+//        label = { Text("Código de Verificação") },
+//        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+//    )
+//
+//    Spacer(modifier = Modifier.padding(16.dp))
+//
+//    Row(
+//        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
+//    ) {
+//        Button(onClick = {
+//            if (codigoDigitado == numeroAleatorio) {
+//                resultadoCaptura(true)
+//            } else {
+//                showToast(myContext, "Código inválido. $numeroAleatorio")
+//            }
+//        }) {
+//            Text("Validar Código")
+//        }
+//        Button(onClick = {
+//            resultadoCaptura(false)
+//        }) {
+//            Text("Reenviar Código")
+//        }
+//    }
+//}
 
 //Funcao para mostrar um elemento de erro padrão do android
 fun showToast(context: Context, message: String) {
