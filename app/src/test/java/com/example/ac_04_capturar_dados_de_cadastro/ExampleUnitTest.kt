@@ -1,4 +1,4 @@
-package com.example.ac_04_capturar_dados_de_cadastro
+package com.example.ac_05_crud
 
 import org.junit.Test
 

@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ac_04_capturar_dados_de_cadastro"
+rootProject.name = "ac_05_crud"
 include(":app")
  

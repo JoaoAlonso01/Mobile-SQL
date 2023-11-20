@@ -1,4 +1,4 @@
-package com.example.ac_04_capturar_dados_de_cadastro.ui.theme
+package com.example.ac_05_crud.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -38,7 +38,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun Ac_04_capturar_dados_de_cadastroTheme(
+fun Ac_05_crudTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

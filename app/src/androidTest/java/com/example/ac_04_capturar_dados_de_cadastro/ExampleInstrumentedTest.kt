@@ -1,4 +1,4 @@
-package com.example.ac_04_capturar_dados_de_cadastro
+package com.example.ac_05_crud
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.ac_04_capturar_dados_de_cadastro", appContext.packageName)
+        assertEquals("com.example.ac_05_crud", appContext.packageName)
     }
 }

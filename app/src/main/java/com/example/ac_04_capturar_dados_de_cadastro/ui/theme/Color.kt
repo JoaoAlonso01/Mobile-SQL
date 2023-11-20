@@ -1,4 +1,4 @@
-package com.example.ac_04_capturar_dados_de_cadastro.ui.theme
+package com.example.ac_05_crud.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

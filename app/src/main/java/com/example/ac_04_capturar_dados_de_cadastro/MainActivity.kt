@@ -1,4 +1,4 @@
-package com.example.ac_04_capturar_dados_de_cadastro
+package com.example.ac_05_crud
 
 import android.content.Context
 import android.os.Bundle
@@ -47,7 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
-import com.example.ac_04_capturar_dados_de_cadastro.ui.theme.Ac_04_capturar_dados_de_cadastroTheme
+import com.example.ac_05_crud.ui.theme.Ac_05_crudTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Ac_04_capturar_dados_de_cadastroTheme {
+            Ac_05_crudTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -851,7 +851,7 @@ fun showToast(context: Context, message: String) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    Ac_04_capturar_dados_de_cadastroTheme {
+    Ac_05_crudTheme {
         Tela()
     }
 }

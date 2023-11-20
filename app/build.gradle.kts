@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.ac_04_capturar_dados_de_cadastro"
+    namespace = "com.example.ac_05_crud"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.ac_04_capturar_dados_de_cadastro"
+        applicationId = "com.example.ac_05_crud"
         minSdk = 34
         targetSdk = 34
         versionCode = 1
