@@ -39,7 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.LightGray
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
@@ -202,7 +202,8 @@ fun Tela() {
 
 //Criando um surface para preencher a tela inteira (Tela de fundo)
     Surface(
-        color = Color.DarkGray, modifier = Modifier
+        color = Color(0xFF006064),
+        modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
 
@@ -228,7 +229,8 @@ fun Tela() {
                 Spacer(modifier = Modifier.padding(10.dp))
 
 //Criando a text field do nome
-                OutlinedTextField(value = nome,
+                OutlinedTextField(
+                    value = nome,
                     onValueChange = {
 //verifica se a string nao contem uma quebra de linha se for verdadeiro executa
 // o que esta dentro do if
@@ -262,7 +264,8 @@ fun Tela() {
                 var loading by remember { mutableStateOf(false) }
 
 //Criando o textfield do cep
-                OutlinedTextField(value = cep,
+                OutlinedTextField(
+                    value = cep,
                     onValueChange = {
 //Se a string digitada for somente numeros o cep pega o valor da digitacao
                         if (it.isDigitsOnly()) {
@@ -437,7 +440,8 @@ fun Tela() {
 
 //Criando uma row para deixar os itens um do lado do outro
                 Row() {
-                    OutlinedTextField(value = ddd,
+                    OutlinedTextField(
+                        value = ddd,
                         onValueChange = {
                             ddd = it
                         },
@@ -459,7 +463,8 @@ fun Tela() {
                     )
                     Spacer(modifier = Modifier.padding(4.dp))
 
-                    OutlinedTextField(value = celular,
+                    OutlinedTextField(
+                        value = celular,
                         onValueChange = {
                             celular = it
                         },
@@ -512,7 +517,8 @@ fun Tela() {
                 }
 
 // Criando a textField para email
-                OutlinedTextField(value = email,
+                OutlinedTextField(
+                    value = email,
                     onValueChange = { email = it.replace(" ", "").lowercase() },
                     placeholder = { Text("email@dominio.com.br") },
                     label = { Text("E-mail") },
@@ -525,8 +531,8 @@ fun Tela() {
                         focusedBorderColor = Black,
                         containerColor = White,
                         textColor = Black,
-                        focusedLabelColor = LightGray,
-                        unfocusedLabelColor = LightGray
+                        focusedLabelColor = DarkGray,
+                        unfocusedLabelColor = DarkGray
                     )
                 )
 
@@ -542,7 +548,7 @@ fun Tela() {
                 OutlinedButton(
                     modifier = Modifier.align(Alignment.Start),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = LightGray
+                        containerColor = DarkGray
                     ), onClick = {
 // Se todas essas validações passar ele muda para a tela 2
 
@@ -563,7 +569,7 @@ fun Tela() {
                 OutlinedButton(
                     modifier = Modifier.align(Alignment.Start),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = LightGray
+                        containerColor = DarkGray
                     ), onClick = {
 // Se todas essas validações passar ele muda para a tela 2
 
@@ -584,7 +590,7 @@ fun Tela() {
                 OutlinedButton(
                     modifier = Modifier.align(Alignment.Start),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = LightGray
+                        containerColor = DarkGray
                     ), onClick = {
 // Se todas essas validações passar ele muda para a tela 2
 
@@ -605,7 +611,7 @@ fun Tela() {
                 OutlinedButton(
                     modifier = Modifier.align(Alignment.Start),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = LightGray
+                        containerColor = DarkGray
                     ), onClick = {
 // Se todas essas validações passar ele muda para a tela 2
 
