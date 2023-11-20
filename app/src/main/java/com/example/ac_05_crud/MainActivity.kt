@@ -1,12 +1,14 @@
 package com.example.ac_05_crud
 
+import android.content.ContentValues
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
 import android.os.Bundle
 import android.view.Gravity
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Start
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,7 +30,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
@@ -54,11 +54,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import java.io.BufferedOutputStream
-import java.io.OutputStreamWriter
-import java.net.HttpURLConnection
 import java.net.URL
-import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,16 +106,35 @@ fun Tela() {
     var ddd by remember {
         mutableStateOf("")
     }
-    var exibir by remember {
-        mutableStateOf(false)
-    }
     var email by remember {
         mutableStateOf("")
     }
-    var emailValido by remember { mutableStateOf("") }
+
+    var exibir by remember {
+        mutableStateOf(false)
+    }
 
 //variavel para se der algum erro
     var error = ""
+
+
+    var salvar by remember {
+        mutableStateOf(false)
+    }
+    var atualizar by remember {
+        mutableStateOf(false)
+    }
+    var buscar by remember {
+        mutableStateOf(false)
+    }
+    var deletar by remember {
+        mutableStateOf(false)
+    }
+
+    var nomeValido by remember {
+        mutableStateOf("")
+    }
+
 
 //lista com todos os DDDS validos para o Brasil
     val ddds = arrayOf(
@@ -197,7 +212,7 @@ fun Tela() {
 
 // criando a variavel para controlar a tela
     var etapa by remember {
-        mutableStateOf(1)
+        mutableStateOf("inicio")
     }
 
 //Criando um surface para preencher a tela inteira (Tela de fundo)
@@ -216,7 +231,7 @@ fun Tela() {
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            if (etapa == 1) {
+            if (etapa == "inicio") {
 
                 Text(
                     text = "Capturar Dados de Cadastro",
@@ -231,14 +246,7 @@ fun Tela() {
 //Criando a text field do nome
                 OutlinedTextField(
                     value = nome,
-                    onValueChange = {
-//verifica se a string nao contem uma quebra de linha se for verdadeiro executa
-// o que esta dentro do if
-                        if (!it.contains('\n')) {
-                            nome = it.uppercase()
-                        }
-//Definindo uma label para o usuario saber oque terá de ser digitado
-                    },
+                    placeholder = { Text("Nome Completo") },
                     label = { Text("Nome Completo") },
                     modifier = Modifier
                         .height(70.dp)
@@ -250,7 +258,15 @@ fun Tela() {
                         textColor = Black,
                         focusedLabelColor = White,
                         unfocusedLabelColor = White
-                    )
+                    ),
+                    onValueChange = {
+//verifica se a string nao contem uma quebra de linha se for verdadeiro executa
+// o que esta dentro do if
+                        if (!it.contains('\n')) {
+                            nome = it.uppercase()
+                        }
+//Definindo uma label para o usuario saber oque terá de ser digitado
+                    },
                 )
 
                 if (nome.length > 0 && !validateName(nome)) {
@@ -266,6 +282,22 @@ fun Tela() {
 //Criando o textfield do cep
                 OutlinedTextField(
                     value = cep,
+                    placeholder = { Text("12345678") },
+                    label = { Text("CEP") },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number
+                    ),
+                    modifier = Modifier
+                        .height(70.dp)
+                        .width(301.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        unfocusedBorderColor = Black,
+                        focusedBorderColor = Black,
+                        containerColor = White,
+                        textColor = Black,
+                        focusedLabelColor = White,
+                        unfocusedLabelColor = White
+                    ),
                     onValueChange = {
 //Se a string digitada for somente numeros o cep pega o valor da digitacao
                         if (it.isDigitsOnly()) {
@@ -294,22 +326,7 @@ fun Tela() {
                         }
 
 //Criando uma Label e alterando o teclado para somente aparecer numeros
-                    },
-                    label = { Text("CEP") },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number
-                    ),
-                    modifier = Modifier
-                        .height(70.dp)
-                        .width(301.dp),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        unfocusedBorderColor = Black,
-                        focusedBorderColor = Black,
-                        containerColor = White,
-                        textColor = Black,
-                        focusedLabelColor = White,
-                        unfocusedLabelColor = White
-                    )
+                    }
                 )
 
 //Se a variavel loading for verdadeira ele mostra uma bolinha carregando
@@ -321,8 +338,9 @@ fun Tela() {
                 if (exibir) {
                     (Text(error))
 
-                    OutlinedTextField(value = endereco,
-                        onValueChange = { endereco = it },
+                    OutlinedTextField(
+                        value = endereco,
+                        label = { Text("Rua") },
                         enabled = false,
                         modifier = Modifier
                             .height(70.dp)
@@ -336,7 +354,9 @@ fun Tela() {
                             unfocusedLabelColor = White,
                             disabledLabelColor = White
                         ),
-                        label = { Text("Rua") })
+                        onValueChange = { endereco = it },
+
+                        )
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -344,7 +364,8 @@ fun Tela() {
                     ) {
                         OutlinedTextField(
                             value = numero,
-                            onValueChange = { numero = it },
+                            placeholder = { Text("Numero") },
+                            label = { Text("N°") },
                             modifier = Modifier
                                 .height(70.dp)
                                 .width(97.dp),
@@ -356,7 +377,8 @@ fun Tela() {
                                 focusedLabelColor = White,
                                 unfocusedLabelColor = White,
                             ),
-                            label = { Text("N°") },
+                            onValueChange = { numero = it },
+
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Number
                             )
@@ -365,7 +387,8 @@ fun Tela() {
                         Spacer(modifier = Modifier.padding(4.dp))
 
                         OutlinedTextField(value = complemento,
-                            onValueChange = { complemento = it },
+                            placeholder = { Text("Apt, Lote, Etc...") },
+                            label = { Text("Complemento") },
                             modifier = Modifier
                                 .height(70.dp)
                                 .width(197.dp),
@@ -377,12 +400,14 @@ fun Tela() {
                                 focusedLabelColor = White,
                                 unfocusedLabelColor = White,
                             ),
-                            label = { Text("Complemento") })
+                            onValueChange = { complemento = it }
+
+                        )
 
                     }
 
                     OutlinedTextField(value = bairro,
-                        onValueChange = { bairro = it },
+                        label = { Text("Bairro") },
                         enabled = false,
                         modifier = Modifier
                             .height(70.dp)
@@ -396,11 +421,13 @@ fun Tela() {
                             unfocusedLabelColor = White,
                             disabledLabelColor = White
                         ),
-                        label = { Text("Bairro") })
+                        onValueChange = { bairro = it }
 
+                    )
                     Row() {
                         OutlinedTextField(value = cidade,
-                            onValueChange = { cidade = it },
+                            label = { Text("Cidade") },
+
                             enabled = false,
                             modifier = Modifier
                                 .height(70.dp)
@@ -414,12 +441,12 @@ fun Tela() {
                                 unfocusedLabelColor = White,
                                 disabledLabelColor = White
                             ),
-                            label = { Text("Cidade") })
-
+                            onValueChange = { cidade = it }
+                        )
                         Spacer(modifier = Modifier.padding(4.dp))
 
                         OutlinedTextField(value = estado,
-                            onValueChange = { estado = it },
+                            label = { Text("UF") },
                             enabled = false,
                             modifier = Modifier
                                 .height(70.dp)
@@ -433,7 +460,9 @@ fun Tela() {
                                 unfocusedLabelColor = White,
                                 disabledLabelColor = White
                             ),
-                            label = { Text("UF") })
+                            onValueChange = { estado = it }
+
+                        )
                     }
 
                 }
@@ -442,9 +471,7 @@ fun Tela() {
                 Row() {
                     OutlinedTextField(
                         value = ddd,
-                        onValueChange = {
-                            ddd = it
-                        },
+                        placeholder = { Text("00") },
                         label = { Text("DDD") },
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Number
@@ -459,15 +486,16 @@ fun Tela() {
                             textColor = Black,
                             focusedLabelColor = White,
                             unfocusedLabelColor = White
-                        )
+                        ),
+                        onValueChange = {
+                            ddd = it
+                        }
                     )
                     Spacer(modifier = Modifier.padding(4.dp))
 
                     OutlinedTextField(
                         value = celular,
-                        onValueChange = {
-                            celular = it
-                        },
+                        placeholder = { Text("123456789") },
                         label = { Text("Celular") },
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Number
@@ -482,7 +510,10 @@ fun Tela() {
                             textColor = Black,
                             focusedLabelColor = White,
                             unfocusedLabelColor = White
-                        )
+                        ),
+                        onValueChange = {
+                            celular = it
+                        }
                     )
                 }
 
@@ -519,7 +550,6 @@ fun Tela() {
 // Criando a textField para email
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it.replace(" ", "").lowercase() },
                     placeholder = { Text("email@dominio.com.br") },
                     label = { Text("E-mail") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
@@ -531,9 +561,10 @@ fun Tela() {
                         focusedBorderColor = Black,
                         containerColor = White,
                         textColor = Black,
-                        focusedLabelColor = DarkGray,
-                        unfocusedLabelColor = DarkGray
-                    )
+                        focusedLabelColor = White,
+                        unfocusedLabelColor = White
+                    ),
+                    onValueChange = { email = it.replace(" ", "").lowercase() },
                 )
 
 //Se o email nao for vazio e o email nao for valido
@@ -545,143 +576,239 @@ fun Tela() {
                 Spacer(modifier = Modifier.padding(16.dp))
 
 //Criando um botao para enviar o codigo de verificação e verificar algumas informações preenchidas
-                OutlinedButton(
-                    modifier = Modifier.align(Alignment.Start),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = DarkGray
-                    ), onClick = {
+
+                Row {
+                    OutlinedButton(
+//                    enabled = isValid(email),
+                        modifier = Modifier.width(150.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFF26A69A)
+                        ),
+                        onClick = {
 // Se todas essas validações passar ele muda para a tela 2
 
-                        if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
-                                nome
-                            ) && celular.length == 9 && celular[0] == '9'
-                        ) {
-                            etapa++
-                        }
+                            if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
+                                    nome
+                                ) && celular.length == 9 && celular[0] == '9'
+                            ) {
+                                etapa = "buscar"
+                                buscar = true
+                            }
 
-                    },
+                        },
 //Habilita o botão somente se o email for valido
-                    enabled = isValid(email)
-                ) {
-                    Text("Salvar Dados", color = Color.Black)
+                    ) {
+                        Text("Buscar Dados", color = Color.Black)
+                    }
+
+                    Spacer(modifier = Modifier.padding(4.dp))
+
+                    OutlinedButton(
+//                    enabled = isValid(email),
+                        modifier = Modifier.width(150.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFF26A69A)
+                        ),
+                        onClick = {
+// Se todas essas validações passar ele muda para a tela 2
+
+                            if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
+                                    nome
+                                ) && celular.length == 9 && celular[0] == '9'
+                            ) {
+                                etapa = "salvar"
+                                salvar = true
+
+                            }
+
+                        },
+//Habilita o botão somente se o email for valido
+                    ) {
+                        Text("Salvar Dados", color = Color.Black)
+                    }
+                }
+
+                Row {
+                    OutlinedButton(
+//                    enabled = isValid(email),
+                        modifier = Modifier.width(150.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFF26A69A)
+                        ),
+                        onClick = {
+// Se todas essas validações passar ele muda para a tela 2
+
+                            if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
+                                    nome
+                                ) && celular.length == 9 && celular[0] == '9'
+                            ) {
+                                etapa = "atualizar"
+                                atualizar = true
+                            }
+
+                        },
+//Habilita o botão somente se o email for valido
+                    ) {
+                        Text("Atualizar Dados", color = Color.Black)
+                    }
+
+                    Spacer(modifier = Modifier.padding(4.dp))
+
+                    OutlinedButton(
+//                    enabled = true,
+                        modifier = Modifier.width(150.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFF26A69A)
+                        ),
+                        onClick = {
+// Se todas essas validações passar ele muda para a tela 2
+
+                            if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
+                                    nome
+                                ) && celular.length == 9 && celular[0] == '9'
+                            ) {
+                                etapa = "deletar"
+                                deletar = true
+                            }
+
+                        },
+//Habilita o botão somente se o email for valido
+                    ) {
+                        Text("Deletar Dados", color = Color.Black)
+                    }
                 }
 
                 OutlinedButton(
-                    modifier = Modifier.align(Alignment.Start),
+//                    enabled = true,
+                    modifier = Modifier.width(305.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = DarkGray
-                    ), onClick = {
+                        containerColor = Color(0xFF26A69A)
+                    ),
+                    onClick = {
 // Se todas essas validações passar ele muda para a tela 2
-
-                        if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
-                                nome
-                            ) && celular.length == 9 && celular[0] == '9'
-                        ) {
-                            etapa++
-                        }
+                        nome = ""
+                        cep = ""
+                        ddd = ""
+                        numero = ""
+                        complemento = ""
+                        celular = ""
+                        email = ""
+                        exibir = false
 
                     },
 //Habilita o botão somente se o email for valido
-                    enabled = isValid(email)
                 ) {
-                    Text("Atualizar Dados", color = Color.Black)
+                    Text("Limpar Dados", color = Color.Black)
                 }
-
-                OutlinedButton(
-                    modifier = Modifier.align(Alignment.Start),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = DarkGray
-                    ), onClick = {
-// Se todas essas validações passar ele muda para a tela 2
-
-                        if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
-                                nome
-                            ) && celular.length == 9 && celular[0] == '9'
-                        ) {
-                            etapa++
-                        }
-
-                    },
-//Habilita o botão somente se o email for valido
-                    enabled = isValid(email)
-                ) {
-                    Text("Buscar Dados", color = Color.Black)
-                }
-
-                OutlinedButton(
-                    modifier = Modifier.align(Alignment.Start),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = DarkGray
-                    ), onClick = {
-// Se todas essas validações passar ele muda para a tela 2
-
-                        if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
-                                nome
-                            ) && celular.length == 9 && celular[0] == '9'
-                        ) {
-                            etapa++
-                        }
-
-                    },
-//Habilita o botão somente se o email for valido
-                    enabled = isValid(email)
-                ) {
-                    Text("Deletar Dados", color = Color.Black)
+            }
+//Se a etapa for igual a "buscar" roda essas funções
+            if (etapa == "buscarOK") {
+                BuscaDados(nomeValido) {
+                    nomeValido = nome
+                    etapa = "inicio"
                 }
             }
 
-//Se a etapa for igual a 2 roda essas funções
-            if (etapa == 2) {
-//// Gerar um numero aleatorio
-//                var numeroAleatorio = gerarNumero()
-//// Disparar um e-mail
-//                if (dispararEmail(numeroAleatorio = numeroAleatorio, email = emailValido)) {
-//// Aguardar digitação do código correto
-//                    CapturaRetorno(emailValido, numeroAleatorio) {
-//                        if (it) {
-//                            etapa++
-//                        } else {
-//                            etapa--
-//                        }
-//                    }
-//                } else {
-//                    var myContext = LocalContext.current
-//                    showToast(myContext, "Erro ao disparar email. Tente mais tarde.")
-//                    etapa--
-//                }
+//Se a etapa for igual a "salvar" roda essas funções
+            if (etapa == "salvarOK") {
+                SalvaDados(nomeValido) {
+                    nomeValido = nome
+                    etapa = "inicio"
+                }
             }
 
-            if (etapa == 3) {
-// Exibir mensagem de sucesso
-//                CapturaComSucesso(emailValido) {
-//                    emailValido = ""
-//                    etapa = 1
-//                }
+//Se a etapa for igual a "atualizar" roda essas funções
+            if (etapa == "atualizarOK") {
+                AtualizaDados(nomeValido) {
+                    nomeValido = nome
+                    etapa = "inicio"
+                }
+            }
+
+
+//Se a etapa for igual a "deletar" roda essas funções
+            if (etapa == "deletarOK") {
+                DeletaDados(nomeValido) {
+                    nomeValido = nome
+                    etapa = "inicio"
+                }
             }
         }
     }
 }
 
 
-//Função para a etapa 3
-//@Composable
-//fun CapturaComSucesso(email: String, trataRetorno: () -> Unit) {
-//    Text(
-//        "Email $email validado com sucesso",
-//        fontSize = 20.sp,
-//        textAlign = TextAlign.Center,
-//        color = Color.White
-//    )
-//
-//    Spacer(modifier = Modifier.padding(16.dp))
-//
-//    Button(onClick = {
-//        trataRetorno()
-//    }) {
-//        Text("Voltar")
-//    }
-//}
+@Composable
+fun BuscaDados(nome: String, trataRetorno: () -> Unit) {
+    Text(
+        "$nome, seus dados foram buscados",
+        fontSize = 20.sp,
+        textAlign = TextAlign.Center,
+        color = Color.White
+    )
 
+    Spacer(modifier = Modifier.padding(16.dp))
+
+    Button(onClick = {
+        trataRetorno()
+    }) {
+        Text("Voltar")
+    }
+}
+
+@Composable
+fun SalvaDados(nome: String, trataRetorno: () -> Unit) {
+    Text(
+        "$nome, seus dados foram salvos",
+        fontSize = 20.sp,
+        textAlign = TextAlign.Center,
+        color = Color.White
+    )
+
+    Spacer(modifier = Modifier.padding(16.dp))
+
+    Button(onClick = {
+        trataRetorno()
+    }) {
+        Text("Voltar")
+    }
+}
+
+@Composable
+fun AtualizaDados(nome: String, trataRetorno: () -> Unit) {
+    Text(
+        "$nome, seus dados foram atualizados",
+        fontSize = 20.sp,
+        textAlign = TextAlign.Center,
+        color = Color.White
+    )
+
+    Spacer(modifier = Modifier.padding(16.dp))
+
+    Button(onClick = {
+        trataRetorno()
+    }) {
+        Text("Voltar")
+    }
+}
+
+@Composable
+fun DeletaDados(nome: String, trataRetorno: () -> Unit) {
+    Text(
+        "$nome, seus dados foram deletados",
+        fontSize = 20.sp,
+        textAlign = TextAlign.Center,
+        color = Color.White
+    )
+
+    Spacer(modifier = Modifier.padding(16.dp))
+
+    Button(onClick = {
+        trataRetorno()
+    }) {
+        Text("Voltar")
+    }
+}
 
 //Função que valida se o nome é valido ou não
 fun validateName(nome: String): Boolean {
@@ -774,145 +901,6 @@ fun isValid(email: String): Boolean {
     return true
 }
 
-//Gera um numero aleatorio para o codigo de verificação
-//fun gerarNumero(): String {
-//    var auxiliar = ""
-//
-//    for (i in 1..6) {
-//        auxiliar += Random.nextInt(10)
-//    }
-//    return auxiliar
-//}
-
-
-//Utiliza a api da sendgrid para disparar o email para o usuario
-//fun dispararEmail(email: String, numeroAleatorio: String): Boolean {
-//    // Implementação da Rotina de envio do SendGrid
-//    val myApiKey = "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"
-//    val url = URL("https://api.sendgrid.com/v3/mail/send")
-//    val urlConnection = url.openConnection() as HttpURLConnection
-//    var response = ""
-//    var bOk = true
-//
-//    CoroutineScope(Dispatchers.IO).launch {
-//        try {
-//            // Configurar a conexão para o método POST
-//            urlConnection.requestMethod = "POST"
-//            urlConnection.doOutput = true
-//
-//            // Adicionar cabeçalhos
-//            urlConnection.setRequestProperty("Authorization", "Bearer $myApiKey")
-//            urlConnection.setRequestProperty("Content-Type", "application/json")
-//
-//            // Adicionar o corpo da requisição
-//            val postData = """
-//               {
-//                   "personalizations": [
-//                   {
-//                       "to": [
-//                               {
-//                                   "email": "$email"
-//                               }
-//                           ],
-//                       "subject": "Confirmação de E-Mail"
-//                   }
-//                   ],
-//                   "content": [
-//                   {
-//                       "type": "text/plain",
-//                       "value": "Seu código de validação é $numeroAleatorio"
-//                   }
-//               ]   ,
-//               "from": {
-//                   "email": "alexandre.ricardo@gmail.com",
-//                   "name": "Validador de E-Mais"
-//               },
-//               "reply_to": {
-//                   "email": "noreply@gmail.com",
-//                   "name": "No Reply"
-//               }
-//           }
-//           """.trimIndent()
-//
-//            val out = BufferedOutputStream(urlConnection.outputStream)
-//            val writer = OutputStreamWriter(out, "UTF-8")
-//            writer.write(postData)
-//            writer.flush()
-//            writer.close()
-//            out.close()
-//
-//            // Obter a resposta do servidor
-//            val inputStream = urlConnection.inputStream
-//            response =
-//                inputStream.bufferedReader().use { it.readText() } // Lidar com a resposta aqui
-//        } catch (e: Exception) {
-//            bOk = false
-//        } finally {
-//            urlConnection.disconnect()
-//        }
-//    }
-//    return bOk
-//}
-
-//Tela 2 da aplicação onde pede o codigo de verificação para a pessoa
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun CapturaRetorno(email: String, numeroAleatorio: String, resultadoCaptura: (Boolean) -> Unit) {
-//    val myContext = LocalContext.current
-//
-//    var codigoDigitado by remember {
-//        mutableStateOf("")
-//    }
-//    Text(
-//        "Codigo de Validação Enviado.",
-//        fontSize = 20.sp,
-//        textAlign = TextAlign.Center,
-//        color = Color.White
-//    )
-//
-//    Spacer(modifier = Modifier.padding(16.dp))
-//
-//    Text(
-//        "Foi enviado um código de verificação para o e-mail $email. Verifique sua caixa postal e informe abaixo o código recebido",
-//        fontSize = 12.sp,
-//        textAlign = TextAlign.Center,
-//        color = Color.White
-//    )
-//
-//    Spacer(modifier = Modifier.padding(16.dp))
-//
-//    TextField(value = codigoDigitado,
-//        onValueChange = {
-//            if (it.length <= 6) {
-//                codigoDigitado = it
-//            }
-//        },
-//        label = { Text("Código de Verificação") },
-//        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-//    )
-//
-//    Spacer(modifier = Modifier.padding(16.dp))
-//
-//    Row(
-//        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
-//    ) {
-//        Button(onClick = {
-//            if (codigoDigitado == numeroAleatorio) {
-//                resultadoCaptura(true)
-//            } else {
-//                showToast(myContext, "Código inválido. $numeroAleatorio")
-//            }
-//        }) {
-//            Text("Validar Código")
-//        }
-//        Button(onClick = {
-//            resultadoCaptura(false)
-//        }) {
-//            Text("Reenviar Código")
-//        }
-//    }
-//}
-
 //Funcao para mostrar um elemento de erro padrão do android
 fun showToast(context: Context, message: String) {
     val toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
@@ -920,10 +908,270 @@ fun showToast(context: Context, message: String) {
     toast.show()
 }
 
+
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     Ac_05_crudTheme {
         Tela()
+    }
+}
+
+@Composable
+fun crudFunction(db: TaskDBHelper?) {
+    if (db != null) {
+        Column()
+        {
+            db.addTaks(
+                TaskDBHelper.Task(
+                    -1,
+                    "Bruno",
+                    "60192022",
+                    "Rua",
+                    "123",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                )
+            )
+            db.updateTask(
+                TaskDBHelper.Task(
+                    2,
+                    "Bruno",
+                    "60192022",
+                    "Rua",
+                    "123",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                )
+            )
+            db.deleteTask(4)
+
+            var lista = db.getAllTasks()
+            for (item in lista) {
+                Text(
+                    text = """${item.id} - ${item.nome} - CEP: ${item.cep}
+                    | ${item.rua}", ${item.numero}, ${item.complemento}
+                    | ${item.bairro}
+                    | ${item.cidade}, ${item.uf}
+                    | ${item.ddd + item.celular}
+                    | ${item.email}""".trimMargin()
+                )
+            }
+
+            var item = db.getSingle(1)
+            Text(
+                text = """${item.id} - ${item.nome} - CEP: ${item.cep}
+                    | ${item.rua}", ${item.numero}, ${item.complemento}
+                    | ${item.bairro}
+                    | ${item.cidade}, ${item.uf}
+                    | ${item.ddd + item.celular}
+                    | ${item.email}"""
+            )
+        }
+    }
+}
+
+class TaskDBHelper(context: Context) :
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+
+    data class Task(
+        val id: Long,
+        val nome: String,
+        val cep: String,
+        val rua: String,
+        val numero: String,
+        val complemento: String,
+        val bairro: String,
+        val cidade: String,
+        val uf: String,
+        val ddd: String,
+        val celular: String,
+        val email: String
+    )
+
+    companion object {
+        const val DATABASE_NAME = "task.db"
+        const val DATABASE_VERSION = 1
+        const val TABLE_NAME = "task"
+        const val COLUMN_ID = "id"
+        const val COLUMN_NOME = "nome"
+        const val COLUMN_CEP = "cep"
+        const val COLUMN_RUA = "rua"
+        const val COLUMN_NUMERO = "numero"
+        const val COLUMN_COMPLEMENTO = "complemento"
+        const val COLUMN_BAIRRO = "bairro"
+        const val COLUMN_CIDADE = "cidade"
+        const val COLUMN_UF = "uf"
+        const val COLUMN_DDD = "ddd"
+        const val COLUMN_CELULAR = "celular"
+        const val COLUMN_EMAIL = "email"
+
+
+    }
+
+    override fun onCreate(db: SQLiteDatabase?) {
+        val createTable = "CREATE TABLE $TABLE_NAME (" +
+                "$COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "$COLUMN_NOME TEXT, " +
+                "$COLUMN_CEP TEXT," +
+                "$COLUMN_RUA TEXT," +
+                "$COLUMN_NUMERO INTEGER," +
+                "$COLUMN_COMPLEMENTO TEXT," +
+                "$COLUMN_BAIRRO TEXT," +
+                "$COLUMN_CIDADE TEXT," +
+                "$COLUMN_UF TEXT," +
+                "$COLUMN_DDD INTEGER," +
+                "$COLUMN_CELULAR INTEGER," +
+                "$COLUMN_EMAIL TEXT)"
+
+        db?.execSQL(createTable)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
+    }
+
+    fun addTaks(task: Task) {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COLUMN_NOME, task.nome)
+        values.put(COLUMN_CEP, task.cep)
+        values.put(COLUMN_RUA, task.rua)
+        values.put(COLUMN_NUMERO, task.numero)
+        values.put(COLUMN_COMPLEMENTO, task.complemento)
+        values.put(COLUMN_BAIRRO, task.bairro)
+        values.put(COLUMN_CIDADE, task.cidade)
+        values.put(COLUMN_UF, task.uf)
+        values.put(COLUMN_DDD, task.ddd)
+        values.put(COLUMN_CELULAR, task.celular)
+        values.put(COLUMN_EMAIL, task.email)
+
+        db.insert(TABLE_NAME, null, values)
+        db.close()
+    }
+
+    fun getAllTasks(): List<Task> {
+        val tasks = mutableListOf<Task>()
+        val query = "SELECT * FROM $TABLE_NAME"
+        val db = this.readableDatabase
+        var cursor = db.rawQuery(query, null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID))
+                val nome = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NOME))
+                val cep = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CEP))
+                val rua = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RUA))
+                val numero = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NUMERO))
+                val complemento = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COMPLEMENTO))
+                val bairro = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BAIRRO))
+                val cidade = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CIDADE))
+                val uf = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_UF))
+                val ddd = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DDD))
+                val celular = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CELULAR))
+                val email = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EMAIL))
+                tasks.add(
+                    Task(
+                        id,
+                        nome,
+                        cep,
+                        rua,
+                        numero,
+                        complemento,
+                        bairro,
+                        cidade,
+                        uf,
+                        ddd,
+                        celular,
+                        email
+                    )
+                )
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        db.close()
+        return tasks
+    }
+
+    fun getSingle(taskId: Long): Task {
+        var tasks = Task(-1, "", "", "", "", "", "", "", "", "", "", "")
+        val query = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = $taskId"
+        val db = this.readableDatabase
+        var cursor = db.rawQuery(query, null)
+
+        if (cursor.moveToFirst()) {
+            val id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID))
+            val nome = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NOME))
+            val cep = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CEP))
+            val rua = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RUA))
+            val numero = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NUMERO))
+            val complemento = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COMPLEMENTO))
+            val bairro = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BAIRRO))
+            val cidade = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CIDADE))
+            val uf = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_UF))
+            val ddd = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DDD))
+            val celular = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CELULAR))
+            val email = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EMAIL))
+
+            tasks = Task(
+                id,
+                nome,
+                cep,
+                rua,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                uf,
+                ddd,
+                celular,
+                email
+            )
+        }
+
+        cursor.close()
+        db.close()
+        return tasks
+    }
+
+    fun updateTask(task: Task) {
+        val db = this.writableDatabase
+        val values = ContentValues()
+
+        values.put(COLUMN_NOME, task.nome)
+        values.put(COLUMN_CEP, task.cep)
+        values.put(COLUMN_RUA, task.rua)
+        values.put(COLUMN_NUMERO, task.numero)
+        values.put(COLUMN_COMPLEMENTO, task.complemento)
+        values.put(COLUMN_BAIRRO, task.bairro)
+        values.put(COLUMN_CIDADE, task.cidade)
+        values.put(COLUMN_UF, task.uf)
+        values.put(COLUMN_DDD, task.ddd)
+        values.put(COLUMN_CELULAR, task.celular)
+        values.put(COLUMN_EMAIL, task.email)
+
+        db.update(
+            TABLE_NAME, values, "$COLUMN_ID = ?", arrayOf(
+                task.id.toString()
+            )
+        )
+        db.close()
+    }
+
+    fun deleteTask(taskId: Long) {
+        val db = this.writableDatabase
+        db.delete(TABLE_NAME, "$COLUMN_ID = ?", arrayOf(taskId.toString()))
+        db.close()
     }
 }
