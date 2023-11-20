@@ -925,10 +925,10 @@ fun crudFunction(db: TaskDBHelper?) {
             db.addTaks(
                 TaskDBHelper.Task(
                     -1,
-                    "Bruno",
-                    "60192022",
-                    "Rua",
-                    "123",
+                    "",
+                    "",
+                    "",
+                    "",
                     "",
                     "",
                     "",
