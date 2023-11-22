@@ -95,166 +95,178 @@ fun TelaOpcoes() {
     var deletar by remember {
         mutableStateOf(false)
     }
+    var telaOpcoes by remember {
+        mutableStateOf(true)
+    }
 
-
-    //Criando um surface para preencher a tela inteira (Tela de fundo)
-    Surface(
-        color = Color(0xFF006064),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-
-    ) {
-//Definindo o aplicativo para deixar os elementos em coluna (um de baixo do outro)
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
+    if (telaOpcoes) {
+        //Criando um surface para preencher a tela inteira (Tela de fundo)
+        Surface(
+            color = Color(0xFF006064),
             modifier = Modifier
+                .fillMaxSize()
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+
         ) {
-            Text(
-                text = "Capturar Dados de Cadastro",
-                color = Color.White,
-                fontSize = 23.sp,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
+//Definindo o aplicativo para deixar os elementos em coluna (um de baixo do outro)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(
+                    text = "Capturar Dados de Cadastro",
+                    color = Color.White,
+                    fontSize = 23.sp,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
 
-            Spacer(modifier = Modifier.padding(40.dp))
+                Spacer(modifier = Modifier.padding(40.dp))
 
 
-            Row {
-                OutlinedButton(
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .width(150.dp)
-                        .height(150.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color(0xFF26A69A)
-                    ),
-                    onClick = {
-                        opcao = "buscar"
-                        buscar = true
-                    },
+                Row {
+                    OutlinedButton(
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .width(150.dp)
+                            .height(150.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFF26A69A)
+                        ),
+                        onClick = {
+                            opcao = "buscar"
+                            telaOpcoes = false
+                            buscar = true
+                        },
 //Habilita o botão somente se o email for valido
-                ) {
-                    Text(
-                        "BUSCAR DADOS",
-                        color = Color.White,
-                        fontSize = 19.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontFamily = FontFamily.SansSerif,
-                        style = TextStyle(),
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
+                    ) {
+                        Text(
+                            "BUSCAR DADOS",
+                            color = Color.White,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontFamily = FontFamily.SansSerif,
+                            style = TextStyle(),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.padding(4.dp))
+
+                    OutlinedButton(
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .width(150.dp)
+                            .height(150.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFF26A69A)
+                        ),
+                        onClick = {
+                            opcao = "inserir"
+                            telaOpcoes = false
+                            inserir = true
+                        },
+//Habilita o botão somente se o email for valido
+                    ) {
+                        Text(
+                            "INSERIR DADOS",
+                            color = Color.White,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontFamily = FontFamily.SansSerif,
+                            style = TextStyle(),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.padding(4.dp))
 
-                OutlinedButton(
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .width(150.dp)
-                        .height(150.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color(0xFF26A69A)
-                    ),
-                    onClick = {
-                        opcao = "inserir"
-                        inserir = true
-                    },
+                Row {
+                    OutlinedButton(
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .width(150.dp)
+                            .height(150.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFF26A69A)
+                        ),
+                        onClick = {
+                            opcao = "atualizar"
+                            telaOpcoes = false
+                            atualizar = true
+                        },
 //Habilita o botão somente se o email for valido
-                ) {
-                    Text(
-                        "INSERIR DADOS",
-                        color = Color.White,
-                        fontSize = 19.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontFamily = FontFamily.SansSerif,
-                        style = TextStyle(),
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+                    ) {
+                        Text(
+                            "ATUALIZAR DADOS",
+                            color = Color.White,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontFamily = FontFamily.SansSerif,
+                            style = TextStyle(),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
 
-            Spacer(modifier = Modifier.padding(4.dp))
+                    Spacer(modifier = Modifier.padding(4.dp))
 
-            Row {
-                OutlinedButton(
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .width(150.dp)
-                        .height(150.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color(0xFF26A69A)
-                    ),
-                    onClick = {
-                        opcao = "atualizar"
-                        atualizar = true
-                    },
+                    OutlinedButton(
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .width(150.dp)
+                            .height(150.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFF26A69A)
+                        ),
+                        onClick = {
+                            opcao = "deletar"
+                            telaOpcoes = false
+                            deletar = true
+                        },
 //Habilita o botão somente se o email for valido
-                ) {
-                    Text(
-                        "ATUALIZAR DADOS",
-                        color = Color.White,
-                        fontSize = 19.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontFamily = FontFamily.SansSerif,
-                        style = TextStyle(),
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                }
-
-                Spacer(modifier = Modifier.padding(4.dp))
-
-                OutlinedButton(
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .width(150.dp)
-                        .height(150.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color(0xFF26A69A)
-                    ),
-                    onClick = {
-                        opcao = "deletar"
-                        deletar = true
-                    },
-//Habilita o botão somente se o email for valido
-                ) {
-                    Text(
-                        "DELETAR DADOS",
-                        color = Color.White,
-                        fontSize = 19.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontFamily = FontFamily.SansSerif,
-                        style = TextStyle(),
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
+                    ) {
+                        Text(
+                            "DELETAR DADOS",
+                            color = Color.White,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontFamily = FontFamily.SansSerif,
+                            style = TextStyle(),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }
+    } else {
         if (opcao == "buscar") {
             Tela(opcao, buscar, inserir, atualizar, deletar) {
+                telaOpcoes = it
             }
         }
         if (opcao == "inserir") {
             Tela(opcao, buscar, inserir, atualizar, deletar) {
+                telaOpcoes = it
             }
         }
         if (opcao == "atualizar") {
             Tela(opcao, buscar, inserir, atualizar, deletar) {
+                telaOpcoes = it
             }
         }
         if (opcao == "deletar") {
             Tela(opcao, buscar, inserir, atualizar, deletar) {
+                telaOpcoes = it
             }
         }
-
     }
 }
 
@@ -266,7 +278,8 @@ fun Tela(
     inserir: Boolean,
     atualizar: Boolean,
     deletar: Boolean,
-    trataRetorno: () -> Unit
+    //telaInicial: Boolean,
+    trataRetorno: (Boolean) -> Unit
 ) {
 //Criando variaveis para controle das TextFields
     var id by remember {
@@ -402,6 +415,7 @@ fun Tela(
         mutableStateOf("inicio")
     }
 
+
 //Criando um surface para preencher a tela inteira (Tela de fundo)
     Surface(
         color = Color(0xFF006064),
@@ -419,7 +433,7 @@ fun Tela(
                 .verticalScroll(rememberScrollState())
         ) {
             if (etapa == "inicio") {
-                trataRetorno()
+                trataRetorno(false)
 
                 Text(
                     text = "Capturar Dados de Cadastro",
@@ -434,7 +448,10 @@ fun Tela(
                 if (opcao == "buscar" || opcao == "atualizar" || opcao == "deletar") {
                     idField = true
                 }
+                if (idField == true || idField == false) {
+//                    telaInicial = false
 
+                }
 
                 if (idField) {
                     OutlinedTextField(
@@ -857,7 +874,7 @@ fun Tela(
                         },
 //Habilita o botão somente se o email for valido
                     ) {
-                        Text("Salvar Dados", color = Color.Black)
+                        Text("Inserir Dados", color = Color.Black)
                     }
                 }
 
@@ -939,7 +956,7 @@ fun Tela(
                         containerColor = Color(0xFF26A69A)
                     ),
                     onClick = {
-
+                        trataRetorno(true)
                     },
 //Habilita o botão somente se o email for valido
                 ) {
@@ -950,34 +967,35 @@ fun Tela(
 
 //Se a etapa for igual a "buscar" roda essas funções
             if (etapa == "buscarOK") {
+                nomeValido = nome
                 BuscaDados(nomeValido) {
-                    nomeValido = nome
-                    etapa = "inicio"
+                    trataRetorno(true)
                 }
             }
 
 //Se a etapa for igual a "salvar" roda essas funções
             if (etapa == "salvarOK") {
-                SalvaDados(nomeValido) {
-                    nomeValido = nome
-                    etapa = "inicio"
+                nomeValido = nome
+                InsereDados(nomeValido) {
+                    trataRetorno(true)
                 }
             }
 
 //Se a etapa for igual a "atualizar" roda essas funções
             if (etapa == "atualizarOK") {
+                nomeValido = nome
+
                 AtualizaDados(nomeValido) {
-                    nomeValido = nome
-                    etapa = "inicio"
+                    trataRetorno(true)
                 }
             }
 
 
 //Se a etapa for igual a "deletar" roda essas funções
             if (etapa == "deletarOK") {
+                nomeValido = nome
                 DeletaDados(nomeValido) {
-                    nomeValido = nome
-                    etapa = "inicio"
+                    trataRetorno(true)
                 }
             }
         }
@@ -986,9 +1004,9 @@ fun Tela(
 
 
 @Composable
-fun BuscaDados(nome: String, trataRetorno: () -> Unit) {
+fun BuscaDados(nomeValido: String, trataRetorno: (Boolean) -> Unit) {
     Text(
-        "$nome, seus dados foram buscados",
+        "$nomeValido, seus dados foram buscados",
         fontSize = 20.sp,
         textAlign = TextAlign.Center,
         color = Color.White
@@ -997,16 +1015,16 @@ fun BuscaDados(nome: String, trataRetorno: () -> Unit) {
     Spacer(modifier = Modifier.padding(16.dp))
 
     Button(onClick = {
-        trataRetorno()
+        trataRetorno(true)
     }) {
         Text("Voltar")
     }
 }
 
 @Composable
-fun SalvaDados(nome: String, trataRetorno: () -> Unit) {
+fun InsereDados(nomeValido: String, trataRetorno: (Boolean) -> Unit) {
     Text(
-        "$nome, seus dados foram salvos",
+        "$nomeValido, seus dados foram salvos",
         fontSize = 20.sp,
         textAlign = TextAlign.Center,
         color = Color.White
@@ -1015,16 +1033,16 @@ fun SalvaDados(nome: String, trataRetorno: () -> Unit) {
     Spacer(modifier = Modifier.padding(16.dp))
 
     Button(onClick = {
-        trataRetorno()
+        trataRetorno(true)
     }) {
         Text("Voltar")
     }
 }
 
 @Composable
-fun AtualizaDados(nome: String, trataRetorno: () -> Unit) {
+fun AtualizaDados(nomeValido: String, trataRetorno: (Boolean) -> Unit) {
     Text(
-        "$nome, seus dados foram atualizados",
+        "$nomeValido, seus dados foram atualizados",
         fontSize = 20.sp,
         textAlign = TextAlign.Center,
         color = Color.White
@@ -1033,16 +1051,16 @@ fun AtualizaDados(nome: String, trataRetorno: () -> Unit) {
     Spacer(modifier = Modifier.padding(16.dp))
 
     Button(onClick = {
-        trataRetorno()
+        trataRetorno(true)
     }) {
         Text("Voltar")
     }
 }
 
 @Composable
-fun DeletaDados(nome: String, trataRetorno: () -> Unit) {
+fun DeletaDados(nomeValido: String, trataRetorno: (Boolean) -> Unit) {
     Text(
-        "$nome, seus dados foram deletados",
+        "$nomeValido, seus dados foram deletados",
         fontSize = 20.sp,
         textAlign = TextAlign.Center,
         color = Color.White
@@ -1051,7 +1069,7 @@ fun DeletaDados(nome: String, trataRetorno: () -> Unit) {
     Spacer(modifier = Modifier.padding(16.dp))
 
     Button(onClick = {
-        trataRetorno()
+        trataRetorno(true)
     }) {
         Text("Voltar")
     }
@@ -1277,8 +1295,8 @@ class TaskDBHelper(context: Context) :
                 "$COLUMN_BAIRRO TEXT," +
                 "$COLUMN_CIDADE TEXT," +
                 "$COLUMN_UF TEXT," +
-                "$COLUMN_DDD INTEGER," +
-                "$COLUMN_CELULAR INTEGER," +
+                "$COLUMN_DDD TEXT," +
+                "$COLUMN_CELULAR TEXT," +
                 "$COLUMN_EMAIL TEXT)"
 
         db?.execSQL(createTable)
