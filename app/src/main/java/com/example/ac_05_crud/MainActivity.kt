@@ -273,7 +273,8 @@ fun TelaOpcoes(db: TaskDBHelper?) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Tela(db: TaskDBHelper?,
+fun Tela(
+    db: TaskDBHelper?,
     opcao: String,
     buscar: Boolean,
     inserir: Boolean,
@@ -283,9 +284,14 @@ fun Tela(db: TaskDBHelper?,
     trataRetorno: (Boolean) -> Unit
 ) {
 //Criando variaveis para controle das TextFields
-    var id by remember {
+    var value by remember {
         mutableStateOf("")
     }
+    var idToShow by remember {
+        mutableStateOf(0)
+    }
+    var id = 0
+
     var nome by remember {
         mutableStateOf("")
     }
@@ -457,7 +463,7 @@ fun Tela(db: TaskDBHelper?,
                 if (idField) {
                     OutlinedTextField(
                         enabled = true,
-                        value = id,
+                        value = value,
                         placeholder = { Text("ID") },
                         label = { Text("ID") },
                         modifier = Modifier
@@ -474,9 +480,9 @@ fun Tela(db: TaskDBHelper?,
                         ),
                         onValueChange = {
 
-                            if (it.isDigitsOnly()) {
-                                id = it
-                            }
+//                            if (it.isDigitsOnly()) {
+                            value = it
+//                            }
                         },
                     )
                 }
@@ -839,14 +845,9 @@ fun Tela(db: TaskDBHelper?,
                         ),
                         onClick = {
 // Se todas essas validações passar ele muda para a tela 2
-
-                            if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
-                                    nome
-                                ) && celular.length == 9 && celular[0] == '9'
-                            ) {
-                                etapa = "buscarOK"
-                            }
-
+                            etapa = "buscarOK"
+                            id = value.toInt()
+                            idToShow = id
                         },
 //Habilita o botão somente se o email for valido
                     ) {
@@ -868,10 +869,9 @@ fun Tela(db: TaskDBHelper?,
                                     nome
                                 ) && celular.length == 9 && celular[0] == '9'
                             ) {
-                                etapa = "salvarOK"
+                                etapa = "inserirOK"
 
                             }
-
                         },
 //Habilita o botão somente se o email for valido
                     ) {
@@ -895,6 +895,8 @@ fun Tela(db: TaskDBHelper?,
                             ) {
                                 etapa = "atualizarOK"
                             }
+                            id = value.toInt()
+                            idToShow = id
 
                         },
 //Habilita o botão somente se o email for valido
@@ -913,18 +915,34 @@ fun Tela(db: TaskDBHelper?,
                         onClick = {
 // Se todas essas validações passar ele muda para a tela 2
 
-                            if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
-                                    nome
-                                ) && celular.length == 9 && celular[0] == '9'
-                            ) {
-                                etapa = "deletarOK"
-                            }
+//                            if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
+//                                    nome
+//                                ) && celular.length == 9 && celular[0] == '9'
+//                            ) {
+                            etapa = "deletarOK"
+//                            }
+                            id = value.toInt()
+                            idToShow = id
 
                         },
 //Habilita o botão somente se o email for valido
                     ) {
                         Text("Deletar Dados", color = Color.Black)
                     }
+                }
+
+                OutlinedButton(
+                    enabled = true,
+                    modifier = Modifier.width(305.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = Color(0xFF26A69A)
+                    ),
+                    onClick = {
+                        etapa = "buscarAllOK"
+                    },
+//Habilita o botão somente se o email for valido
+                ) {
+                    Text("Buscar Todos Dados", color = Color.Black)
                 }
 
                 OutlinedButton(
@@ -968,16 +986,35 @@ fun Tela(db: TaskDBHelper?,
 
 //Se a etapa for igual a "buscar" roda essas funções
             if (etapa == "buscarOK") {
-                nomeValido = nome
-                BuscaDados(nomeValido) {
+//                nomeValido = nome
+                BuscaDados(db, idToShow) {
                     trataRetorno(true)
                 }
             }
 
-//Se a etapa for igual a "salvar" roda essas funções
-            if (etapa == "salvarOK") {
+            if (etapa == "buscarAllOK") {
+                BuscaTodosDados(db) {
+                    trataRetorno(true)
+                }
+            }
+
+//Se a etapa for igual a "inserir" roda essas funções
+            if (etapa == "inserirOK") {
                 nomeValido = nome
-                InsereDados(db, nomeValido, cep, endereco, numero, complemento, cidade, estado, bairro, ddd, celular, email) {
+                InsereDados(
+                    db,
+                    nomeValido,
+                    cep,
+                    endereco,
+                    numero,
+                    complemento,
+                    cidade,
+                    estado,
+                    bairro,
+                    ddd,
+                    celular,
+                    email
+                ) {
                     trataRetorno(true)
                 }
             }
@@ -986,7 +1023,21 @@ fun Tela(db: TaskDBHelper?,
             if (etapa == "atualizarOK") {
                 nomeValido = nome
 
-                AtualizaDados(nomeValido) {
+                AtualizaDados(
+                    db,
+                    idToShow,
+                    nomeValido,
+                    cep,
+                    endereco,
+                    numero,
+                    complemento,
+                    cidade,
+                    estado,
+                    bairro,
+                    ddd,
+                    celular,
+                    email
+                ) {
                     trataRetorno(true)
                 }
             }
@@ -994,8 +1045,7 @@ fun Tela(db: TaskDBHelper?,
 
 //Se a etapa for igual a "deletar" roda essas funções
             if (etapa == "deletarOK") {
-                nomeValido = nome
-                DeletaDados(nomeValido) {
+                DeletaDados(db, idToShow) {
                     trataRetorno(true)
                 }
             }
@@ -1005,13 +1055,27 @@ fun Tela(db: TaskDBHelper?,
 
 
 @Composable
-fun BuscaDados(nomeValido: String, trataRetorno: (Boolean) -> Unit) {
-    Text(
-        "$nomeValido, seus dados foram buscados",
-        fontSize = 20.sp,
-        textAlign = TextAlign.Center,
-        color = Color.White
-    )
+fun BuscaDados(db: TaskDBHelper?, idToShow: Int, trataRetorno: (Boolean) -> Unit) {
+    if (db != null) {
+        var item = db.getSingle(idToShow.toLong())
+
+//    var item = db.getSingle(1)
+        Text(
+            text = """
+                |${item.id}
+                |${item.nome}
+                |${item.cep}
+                |${item.rua}, ${item.numero}, ${item.complemento}
+                |${item.bairro}
+                |${item.cidade}-${item.uf}
+                |${item.ddd + item.celular}
+                |${item.email}
+                |""".trimMargin(),
+            fontSize = 20.sp,
+            textAlign = TextAlign.Start,
+            color = Color.White
+        )
+    }
 
     Spacer(modifier = Modifier.padding(16.dp))
 
@@ -1023,9 +1087,57 @@ fun BuscaDados(nomeValido: String, trataRetorno: (Boolean) -> Unit) {
 }
 
 @Composable
-fun InsereDados(db: TaskDBHelper?, nome: String, cep: String, endereco: String, numero: String, complemento: String, cidade: String, estado: String, bairro: String, ddd: String, celular: String, email: String,  trataRetorno: (Boolean) -> Unit) {
+fun BuscaTodosDados(db: TaskDBHelper?, trataRetorno: (Boolean) -> Unit) {
+    if (db != null) {
+        var lista = db.getAllTasks()
+        for (item in lista) {
+            Text(
+                text = """
+                |${item.id}
+                |${item.nome}
+                |${item.cep}
+                |${item.rua}
+                |${item.numero}
+                |${item.complemento}
+                |${item.bairro}
+                |${item.cidade}, ${item.uf}
+                |${item.ddd + item.celular}
+                |${item.email}
+                |""".trimMargin(),
+                fontSize = 20.sp,
+                textAlign = TextAlign.Start,
+                color = Color.White
+            )
+        }
+    }
 
-    if(db != null) {
+    Spacer(modifier = Modifier.padding(16.dp))
+
+    Button(onClick = {
+        trataRetorno(true)
+    }) {
+        Text("Voltar")
+    }
+}
+
+@Composable
+fun InsereDados(
+    db: TaskDBHelper?,
+    nome: String,
+    cep: String,
+    endereco: String,
+    numero: String,
+    complemento: String,
+    cidade: String,
+    estado: String,
+    bairro: String,
+    ddd: String,
+    celular: String,
+    email: String,
+    trataRetorno: (Boolean) -> Unit
+) {
+
+    if (db != null) {
         db.addTaks(
             TaskDBHelper.Task(
                 -1,
@@ -1060,9 +1172,43 @@ fun InsereDados(db: TaskDBHelper?, nome: String, cep: String, endereco: String, 
 }
 
 @Composable
-fun AtualizaDados(nomeValido: String, trataRetorno: (Boolean) -> Unit) {
+fun AtualizaDados(
+    db: TaskDBHelper?,
+    idToShow: Int,
+    nome: String,
+    cep: String,
+    endereco: String,
+    numero: String,
+    complemento: String,
+    cidade: String,
+    estado: String,
+    bairro: String,
+    ddd: String,
+    celular: String,
+    email: String,
+    trataRetorno: (Boolean) -> Unit
+) {
+    if (db != null) {
+        db.updateTask(
+            TaskDBHelper.Task(
+                idToShow.toLong(),
+                nome,
+                cep,
+                endereco,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                estado,
+                ddd,
+                celular,
+                email
+            )
+        )
+    }
+
     Text(
-        "$nomeValido, seus dados foram atualizados",
+        "$nome, seus dados foram atualizados",
         fontSize = 20.sp,
         textAlign = TextAlign.Center,
         color = Color.White
@@ -1078,9 +1224,12 @@ fun AtualizaDados(nomeValido: String, trataRetorno: (Boolean) -> Unit) {
 }
 
 @Composable
-fun DeletaDados(nomeValido: String, trataRetorno: (Boolean) -> Unit) {
+fun DeletaDados(db: TaskDBHelper?, idToShow: Int, trataRetorno: (Boolean) -> Unit) {
+    if (db != null) {
+        db.deleteTask(idToShow.toLong())
+    }
     Text(
-        "$nomeValido, seus dados foram deletados",
+        "$idToShow, seus dados foram deletados",
         fontSize = 20.sp,
         textAlign = TextAlign.Center,
         color = Color.White
