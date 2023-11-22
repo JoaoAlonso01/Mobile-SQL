@@ -83,6 +83,18 @@ fun TelaOpcoes() {
     var opcao by remember {
         mutableStateOf("")
     }
+    var buscar by remember {
+        mutableStateOf(false)
+    }
+    var inserir by remember {
+        mutableStateOf(false)
+    }
+    var atualizar by remember {
+        mutableStateOf(false)
+    }
+    var deletar by remember {
+        mutableStateOf(false)
+    }
 
 
     //Criando um surface para preencher a tela inteira (Tela de fundo)
@@ -123,7 +135,7 @@ fun TelaOpcoes() {
                     ),
                     onClick = {
                         opcao = "buscar"
-//                        Tela(opcao)
+                        buscar = true
                     },
 //Habilita o botão somente se o email for valido
                 ) {
@@ -151,7 +163,7 @@ fun TelaOpcoes() {
                     ),
                     onClick = {
                         opcao = "inserir"
-//                        Tela(opcao)
+                        inserir = true
                     },
 //Habilita o botão somente se o email for valido
                 ) {
@@ -181,7 +193,7 @@ fun TelaOpcoes() {
                     ),
                     onClick = {
                         opcao = "atualizar"
-//                        Tela(opcao)
+                        atualizar = true
                     },
 //Habilita o botão somente se o email for valido
                 ) {
@@ -209,7 +221,7 @@ fun TelaOpcoes() {
                     ),
                     onClick = {
                         opcao = "deletar"
-//                        Tela(opcao)
+                        deletar = true
                     },
 //Habilita o botão somente se o email for valido
                 ) {
@@ -226,12 +238,36 @@ fun TelaOpcoes() {
                 }
             }
         }
+        if (opcao == "buscar") {
+            Tela(opcao, buscar, inserir, atualizar, deletar) {
+            }
+        }
+        if (opcao == "inserir") {
+            Tela(opcao, buscar, inserir, atualizar, deletar) {
+            }
+        }
+        if (opcao == "atualizar") {
+            Tela(opcao, buscar, inserir, atualizar, deletar) {
+            }
+        }
+        if (opcao == "deletar") {
+            Tela(opcao, buscar, inserir, atualizar, deletar) {
+            }
+        }
+
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Tela() {
+fun Tela(
+    opcao: String,
+    buscar: Boolean,
+    inserir: Boolean,
+    atualizar: Boolean,
+    deletar: Boolean,
+    trataRetorno: () -> Unit
+) {
 //Criando variaveis para controle das TextFields
     var id by remember {
         mutableStateOf("")
@@ -271,31 +307,19 @@ fun Tela() {
     }
 
     var exibir by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
 //variavel para se der algum erro
     var error = ""
 
-    var salvar by remember {
-        mutableStateOf(false)
-    }
-    var atualizar by remember {
-        mutableStateOf(false)
-    }
-    var buscar by remember {
-        mutableStateOf(false)
-    }
-    var deletar by remember {
-        mutableStateOf(false)
-    }
 
     var nomeValido by remember {
         mutableStateOf("")
     }
 
     var idField by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
 
@@ -383,7 +407,7 @@ fun Tela() {
         color = Color(0xFF006064),
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(1.dp)
 
     ) {
 //Definindo o aplicativo para deixar os elementos em coluna (um de baixo do outro)
@@ -395,6 +419,7 @@ fun Tela() {
                 .verticalScroll(rememberScrollState())
         ) {
             if (etapa == "inicio") {
+                trataRetorno()
 
                 Text(
                     text = "Capturar Dados de Cadastro",
@@ -406,34 +431,37 @@ fun Tela() {
 
                 Spacer(modifier = Modifier.padding(10.dp))
 
-//                if (opcao == "buscar" || opcao == "atualizar" || opcao == "deletar"){
-//                    idField = true
-//                }
+                if (opcao == "buscar" || opcao == "atualizar" || opcao == "deletar") {
+                    idField = true
+                }
 
-                OutlinedTextField(
-                    enabled = idField,
-                    value = nome,
-                    placeholder = { Text("ID") },
-                    label = { Text("ID") },
-                    modifier = Modifier
-                        .height(70.dp)
-                        .width(70.dp)
-                        .alignBy { it.measuredHeight },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        unfocusedBorderColor = Black,
-                        focusedBorderColor = Black,
-                        containerColor = White,
-                        textColor = Black,
-                        focusedLabelColor = White,
-                        unfocusedLabelColor = White
-                    ),
-                    onValueChange = {
 
-                        if (it.isDigitsOnly()) {
-                            id = it
-                        }
-                    },
-                )
+                if (idField) {
+                    OutlinedTextField(
+                        enabled = true,
+                        value = id,
+                        placeholder = { Text("ID") },
+                        label = { Text("ID") },
+                        modifier = Modifier
+                            .height(70.dp)
+                            .width(70.dp)
+                            .alignBy { it.measuredHeight },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            unfocusedBorderColor = Black,
+                            focusedBorderColor = Black,
+                            containerColor = White,
+                            textColor = Black,
+                            focusedLabelColor = White,
+                            unfocusedLabelColor = White
+                        ),
+                        onValueChange = {
+
+                            if (it.isDigitsOnly()) {
+                                id = it
+                            }
+                        },
+                    )
+                }
 
 //Criando a text field do nome
                 OutlinedTextField(
@@ -521,6 +549,14 @@ fun Tela() {
                 if (loading) {
                     CircularProgressIndicator()
                 }
+                if (error != "") {
+                    exibir = false
+                    Text(
+                        "CEP inválido",
+                        color = Color.Red,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
+                }
 
 //se a variavel exibir for verdadeira ela retorna um erro se tiver erro e se estiver tudo certo retorna as textfields com as informações do via cep
                 if (exibir) {
@@ -565,7 +601,11 @@ fun Tela() {
                                 focusedLabelColor = White,
                                 unfocusedLabelColor = White,
                             ),
-                            onValueChange = { numero = it },
+                            onValueChange = {
+                                if (it.isDigitsOnly()) {
+                                    numero = it
+                                }
+                            },
 
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Number
@@ -679,7 +719,9 @@ fun Tela() {
                             unfocusedLabelColor = White
                         ),
                         onValueChange = {
-                            ddd = it
+                            if (it.isDigitsOnly()) {
+                                ddd = it
+                            }
                         }
                     )
                     Spacer(modifier = Modifier.padding(4.dp))
@@ -703,7 +745,9 @@ fun Tela() {
                             unfocusedLabelColor = White
                         ),
                         onValueChange = {
-                            celular = it
+                            if (it.isDigitsOnly()) {
+                                celular = it
+                            }
                         }
                     )
                 }
@@ -770,7 +814,7 @@ fun Tela() {
 
                 Row {
                     OutlinedButton(
-//                    enabled = isValid(email),
+                        enabled = buscar,
                         modifier = Modifier.width(150.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color(0xFF26A69A)
@@ -783,7 +827,6 @@ fun Tela() {
                                 ) && celular.length == 9 && celular[0] == '9'
                             ) {
                                 etapa = "buscarOK"
-                                buscar = true
                             }
 
                         },
@@ -795,7 +838,7 @@ fun Tela() {
                     Spacer(modifier = Modifier.padding(4.dp))
 
                     OutlinedButton(
-//                    enabled = isValid(email),
+                        enabled = inserir,
                         modifier = Modifier.width(150.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color(0xFF26A69A)
@@ -808,7 +851,6 @@ fun Tela() {
                                 ) && celular.length == 9 && celular[0] == '9'
                             ) {
                                 etapa = "salvarOK"
-                                salvar = true
 
                             }
 
@@ -821,7 +863,7 @@ fun Tela() {
 
                 Row {
                     OutlinedButton(
-//                    enabled = isValid(email),
+                        enabled = atualizar,
                         modifier = Modifier.width(150.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color(0xFF26A69A)
@@ -834,7 +876,6 @@ fun Tela() {
                                 ) && celular.length == 9 && celular[0] == '9'
                             ) {
                                 etapa = "atualizarOK"
-                                atualizar = true
                             }
 
                         },
@@ -846,7 +887,7 @@ fun Tela() {
                     Spacer(modifier = Modifier.padding(4.dp))
 
                     OutlinedButton(
-//                    enabled = true,
+                        enabled = deletar,
                         modifier = Modifier.width(150.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color(0xFF26A69A)
@@ -859,7 +900,6 @@ fun Tela() {
                                 ) && celular.length == 9 && celular[0] == '9'
                             ) {
                                 etapa = "deletarOK"
-                                deletar = true
                             }
 
                         },
@@ -870,7 +910,7 @@ fun Tela() {
                 }
 
                 OutlinedButton(
-//                    enabled = true,
+                    enabled = true,
                     modifier = Modifier.width(305.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
                         containerColor = Color(0xFF26A69A)
@@ -890,6 +930,20 @@ fun Tela() {
 //Habilita o botão somente se o email for valido
                 ) {
                     Text("Limpar Dados", color = Color.Black)
+                }
+
+                OutlinedButton(
+//                    enabled = true,
+                    modifier = Modifier.width(305.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = Color(0xFF26A69A)
+                    ),
+                    onClick = {
+
+                    },
+//Habilita o botão somente se o email for valido
+                ) {
+                    Text("Voltar", color = Color.Black)
                 }
             }
 
@@ -1106,7 +1160,7 @@ fun showToast(context: Context, message: String) {
 @Composable
 fun GreetingPreview() {
     Ac_05_crudTheme {
-        Tela()
+        TelaOpcoes()
     }
 }
 
