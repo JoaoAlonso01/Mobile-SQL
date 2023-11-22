@@ -69,7 +69,8 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    TelaOpcoes()
+                    var dbHelper = TaskDBHelper(this)
+                    TelaOpcoes(dbHelper)
                 }
             }
         }
@@ -78,7 +79,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TelaOpcoes() {
+fun TelaOpcoes(db: TaskDBHelper?) {
 //Variaveis de controle de tela
     var opcao by remember {
         mutableStateOf("")
@@ -248,22 +249,22 @@ fun TelaOpcoes() {
         }
     } else {
         if (opcao == "buscar") {
-            Tela(opcao, buscar, inserir, atualizar, deletar) {
+            Tela(db, opcao, buscar, inserir, atualizar, deletar) {
                 telaOpcoes = it
             }
         }
         if (opcao == "inserir") {
-            Tela(opcao, buscar, inserir, atualizar, deletar) {
+            Tela(db, opcao, buscar, inserir, atualizar, deletar) {
                 telaOpcoes = it
             }
         }
         if (opcao == "atualizar") {
-            Tela(opcao, buscar, inserir, atualizar, deletar) {
+            Tela(db, opcao, buscar, inserir, atualizar, deletar) {
                 telaOpcoes = it
             }
         }
         if (opcao == "deletar") {
-            Tela(opcao, buscar, inserir, atualizar, deletar) {
+            Tela(db, opcao, buscar, inserir, atualizar, deletar) {
                 telaOpcoes = it
             }
         }
@@ -272,7 +273,7 @@ fun TelaOpcoes() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Tela(
+fun Tela(db: TaskDBHelper?,
     opcao: String,
     buscar: Boolean,
     inserir: Boolean,
@@ -976,7 +977,7 @@ fun Tela(
 //Se a etapa for igual a "salvar" roda essas funções
             if (etapa == "salvarOK") {
                 nomeValido = nome
-                InsereDados(nomeValido) {
+                InsereDados(db, nomeValido, cep, endereco, numero, complemento, cidade, estado, bairro, ddd, celular, email) {
                     trataRetorno(true)
                 }
             }
@@ -1022,9 +1023,28 @@ fun BuscaDados(nomeValido: String, trataRetorno: (Boolean) -> Unit) {
 }
 
 @Composable
-fun InsereDados(nomeValido: String, trataRetorno: (Boolean) -> Unit) {
+fun InsereDados(db: TaskDBHelper?, nome: String, cep: String, endereco: String, numero: String, complemento: String, cidade: String, estado: String, bairro: String, ddd: String, celular: String, email: String,  trataRetorno: (Boolean) -> Unit) {
+
+    if(db != null) {
+        db.addTaks(
+            TaskDBHelper.Task(
+                -1,
+                nome,
+                cep,
+                endereco,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                estado,
+                ddd,
+                celular,
+                email
+            )
+        )
+    }
     Text(
-        "$nomeValido, seus dados foram salvos",
+        "$nome, seus dados foram salvos",
         fontSize = 20.sp,
         textAlign = TextAlign.Center,
         color = Color.White
@@ -1178,7 +1198,7 @@ fun showToast(context: Context, message: String) {
 @Composable
 fun GreetingPreview() {
     Ac_05_crudTheme {
-        TelaOpcoes()
+        TelaOpcoes(null)
     }
 }
 
