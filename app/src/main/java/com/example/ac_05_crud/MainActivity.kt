@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -42,6 +43,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,7 +69,8 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    Tela()
+                    var dbHelper = TaskDBHelper(this)
+                    TelaOpcoes(dbHelper)
                 }
             }
         }
@@ -74,8 +79,219 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Tela() {
+fun TelaOpcoes(db: TaskDBHelper?) {
+//Variaveis de controle de tela
+    var opcao by remember {
+        mutableStateOf("")
+    }
+    var buscar by remember {
+        mutableStateOf(false)
+    }
+    var inserir by remember {
+        mutableStateOf(false)
+    }
+    var atualizar by remember {
+        mutableStateOf(false)
+    }
+    var deletar by remember {
+        mutableStateOf(false)
+    }
+    var telaOpcoes by remember {
+        mutableStateOf(true)
+    }
+
+    if (telaOpcoes) {
+        //Criando um surface para preencher a tela inteira (Tela de fundo)
+        Surface(
+            color = Color(0xFF006064),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+
+        ) {
+//Definindo o aplicativo para deixar os elementos em coluna (um de baixo do outro)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(
+                    text = "Capturar Dados de Cadastro",
+                    color = Color.White,
+                    fontSize = 23.sp,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.padding(40.dp))
+
+
+                Row {
+                    OutlinedButton(
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .width(150.dp)
+                            .height(150.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFF26A69A)
+                        ),
+                        onClick = {
+                            opcao = "buscar"
+                            telaOpcoes = false
+                            buscar = true
+                        },
+//Habilita o botão somente se o email for valido
+                    ) {
+                        Text(
+                            "BUSCAR DADOS",
+                            color = Color.White,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontFamily = FontFamily.SansSerif,
+                            style = TextStyle(),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.padding(4.dp))
+
+                    OutlinedButton(
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .width(150.dp)
+                            .height(150.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFF26A69A)
+                        ),
+                        onClick = {
+                            opcao = "inserir"
+                            telaOpcoes = false
+                            inserir = true
+                        },
+//Habilita o botão somente se o email for valido
+                    ) {
+                        Text(
+                            "INSERIR DADOS",
+                            color = Color.White,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontFamily = FontFamily.SansSerif,
+                            style = TextStyle(),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.padding(4.dp))
+
+                Row {
+                    OutlinedButton(
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .width(150.dp)
+                            .height(150.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFF26A69A)
+                        ),
+                        onClick = {
+                            opcao = "atualizar"
+                            telaOpcoes = false
+                            atualizar = true
+                        },
+//Habilita o botão somente se o email for valido
+                    ) {
+                        Text(
+                            "ATUALIZAR DADOS",
+                            color = Color.White,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontFamily = FontFamily.SansSerif,
+                            style = TextStyle(),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.padding(4.dp))
+
+                    OutlinedButton(
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .width(150.dp)
+                            .height(150.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color(0xFF26A69A)
+                        ),
+                        onClick = {
+                            opcao = "deletar"
+                            telaOpcoes = false
+                            deletar = true
+                        },
+//Habilita o botão somente se o email for valido
+                    ) {
+                        Text(
+                            "DELETAR DADOS",
+                            color = Color.White,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontFamily = FontFamily.SansSerif,
+                            style = TextStyle(),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        }
+    } else {
+        if (opcao == "buscar") {
+            Tela(db, opcao, buscar, inserir, atualizar, deletar) {
+                telaOpcoes = it
+            }
+        }
+        if (opcao == "inserir") {
+            Tela(db, opcao, buscar, inserir, atualizar, deletar) {
+                telaOpcoes = it
+            }
+        }
+        if (opcao == "atualizar") {
+            Tela(db, opcao, buscar, inserir, atualizar, deletar) {
+                telaOpcoes = it
+            }
+        }
+        if (opcao == "deletar") {
+            Tela(db, opcao, buscar, inserir, atualizar, deletar) {
+                telaOpcoes = it
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Tela(
+    db: TaskDBHelper?,
+    opcao: String,
+    buscar: Boolean,
+    inserir: Boolean,
+    atualizar: Boolean,
+    deletar: Boolean,
+    //telaInicial: Boolean,
+    trataRetorno: (Boolean) -> Unit
+) {
 //Criando variaveis para controle das TextFields
+    var value by remember {
+        mutableStateOf("")
+    }
+    var idToShow by remember {
+        mutableStateOf(0)
+    }
+    var id = 0
+
     var nome by remember {
         mutableStateOf("")
     }
@@ -118,21 +334,12 @@ fun Tela() {
     var error = ""
 
 
-    var salvar by remember {
-        mutableStateOf(false)
-    }
-    var atualizar by remember {
-        mutableStateOf(false)
-    }
-    var buscar by remember {
-        mutableStateOf(false)
-    }
-    var deletar by remember {
-        mutableStateOf(false)
-    }
-
     var nomeValido by remember {
         mutableStateOf("")
+    }
+
+    var idField by remember {
+        mutableStateOf(false)
     }
 
 
@@ -215,12 +422,13 @@ fun Tela() {
         mutableStateOf("inicio")
     }
 
+
 //Criando um surface para preencher a tela inteira (Tela de fundo)
     Surface(
         color = Color(0xFF006064),
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(1.dp)
 
     ) {
 //Definindo o aplicativo para deixar os elementos em coluna (um de baixo do outro)
@@ -232,6 +440,7 @@ fun Tela() {
                 .verticalScroll(rememberScrollState())
         ) {
             if (etapa == "inicio") {
+                trataRetorno(false)
 
                 Text(
                     text = "Capturar Dados de Cadastro",
@@ -242,6 +451,41 @@ fun Tela() {
                 )
 
                 Spacer(modifier = Modifier.padding(10.dp))
+
+                if (opcao == "buscar" || opcao == "atualizar" || opcao == "deletar") {
+                    idField = true
+                }
+                if (idField == true || idField == false) {
+//                    telaInicial = false
+
+                }
+
+                if (idField) {
+                    OutlinedTextField(
+                        enabled = true,
+                        value = value,
+                        placeholder = { Text("ID") },
+                        label = { Text("ID") },
+                        modifier = Modifier
+                            .height(70.dp)
+                            .width(70.dp)
+                            .alignBy { it.measuredHeight },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            unfocusedBorderColor = Black,
+                            focusedBorderColor = Black,
+                            containerColor = White,
+                            textColor = Black,
+                            focusedLabelColor = White,
+                            unfocusedLabelColor = White
+                        ),
+                        onValueChange = {
+
+//                            if (it.isDigitsOnly()) {
+                            value = it
+//                            }
+                        },
+                    )
+                }
 
 //Criando a text field do nome
                 OutlinedTextField(
@@ -265,14 +509,12 @@ fun Tela() {
                         if (!it.contains('\n')) {
                             nome = it.uppercase()
                         }
-//Definindo uma label para o usuario saber oque terá de ser digitado
                     },
                 )
 
                 if (nome.length > 0 && !validateName(nome)) {
                     Text(
                         "Nome inválido", color = Color.Red
-
                     )
                 }
 
@@ -324,8 +566,6 @@ fun Tela() {
                                 exibir = true
                             }
                         }
-
-//Criando uma Label e alterando o teclado para somente aparecer numeros
                     }
                 )
 
@@ -333,10 +573,18 @@ fun Tela() {
                 if (loading) {
                     CircularProgressIndicator()
                 }
+                if (error != "") {
+                    exibir = false
+                    Text(
+                        "CEP inválido",
+                        color = Color.Red,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
+                }
 
 //se a variavel exibir for verdadeira ela retorna um erro se tiver erro e se estiver tudo certo retorna as textfields com as informações do via cep
                 if (exibir) {
-                    (Text(error))
+//                    (Text(error))
 
                     OutlinedTextField(
                         value = endereco,
@@ -377,7 +625,11 @@ fun Tela() {
                                 focusedLabelColor = White,
                                 unfocusedLabelColor = White,
                             ),
-                            onValueChange = { numero = it },
+                            onValueChange = {
+                                if (it.isDigitsOnly()) {
+                                    numero = it
+                                }
+                            },
 
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Number
@@ -468,7 +720,10 @@ fun Tela() {
                 }
 
 //Criando uma row para deixar os itens um do lado do outro
-                Row() {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
                     OutlinedTextField(
                         value = ddd,
                         placeholder = { Text("00") },
@@ -488,7 +743,9 @@ fun Tela() {
                             unfocusedLabelColor = White
                         ),
                         onValueChange = {
-                            ddd = it
+                            if (it.isDigitsOnly()) {
+                                ddd = it
+                            }
                         }
                     )
                     Spacer(modifier = Modifier.padding(4.dp))
@@ -512,7 +769,9 @@ fun Tela() {
                             unfocusedLabelColor = White
                         ),
                         onValueChange = {
-                            celular = it
+                            if (it.isDigitsOnly()) {
+                                celular = it
+                            }
                         }
                     )
                 }
@@ -579,22 +838,16 @@ fun Tela() {
 
                 Row {
                     OutlinedButton(
-//                    enabled = isValid(email),
+                        enabled = buscar,
                         modifier = Modifier.width(150.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color(0xFF26A69A)
                         ),
                         onClick = {
 // Se todas essas validações passar ele muda para a tela 2
-
-                            if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
-                                    nome
-                                ) && celular.length == 9 && celular[0] == '9'
-                            ) {
-                                etapa = "buscar"
-                                buscar = true
-                            }
-
+                            etapa = "buscarOK"
+                            id = value.toInt()
+                            idToShow = id
                         },
 //Habilita o botão somente se o email for valido
                     ) {
@@ -604,7 +857,7 @@ fun Tela() {
                     Spacer(modifier = Modifier.padding(4.dp))
 
                     OutlinedButton(
-//                    enabled = isValid(email),
+                        enabled = inserir,
                         modifier = Modifier.width(150.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color(0xFF26A69A)
@@ -616,21 +869,19 @@ fun Tela() {
                                     nome
                                 ) && celular.length == 9 && celular[0] == '9'
                             ) {
-                                etapa = "salvar"
-                                salvar = true
+                                etapa = "inserirOK"
 
                             }
-
                         },
 //Habilita o botão somente se o email for valido
                     ) {
-                        Text("Salvar Dados", color = Color.Black)
+                        Text("Inserir Dados", color = Color.Black)
                     }
                 }
 
                 Row {
                     OutlinedButton(
-//                    enabled = isValid(email),
+                        enabled = atualizar,
                         modifier = Modifier.width(150.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color(0xFF26A69A)
@@ -642,9 +893,10 @@ fun Tela() {
                                     nome
                                 ) && celular.length == 9 && celular[0] == '9'
                             ) {
-                                etapa = "atualizar"
-                                atualizar = true
+                                etapa = "atualizarOK"
                             }
+                            id = value.toInt()
+                            idToShow = id
 
                         },
 //Habilita o botão somente se o email for valido
@@ -655,7 +907,7 @@ fun Tela() {
                     Spacer(modifier = Modifier.padding(4.dp))
 
                     OutlinedButton(
-//                    enabled = true,
+                        enabled = deletar,
                         modifier = Modifier.width(150.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color(0xFF26A69A)
@@ -663,13 +915,14 @@ fun Tela() {
                         onClick = {
 // Se todas essas validações passar ele muda para a tela 2
 
-                            if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
-                                    nome
-                                ) && celular.length == 9 && celular[0] == '9'
-                            ) {
-                                etapa = "deletar"
-                                deletar = true
-                            }
+//                            if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
+//                                    nome
+//                                ) && celular.length == 9 && celular[0] == '9'
+//                            ) {
+                            etapa = "deletarOK"
+//                            }
+                            id = value.toInt()
+                            idToShow = id
 
                         },
 //Habilita o botão somente se o email for valido
@@ -679,7 +932,21 @@ fun Tela() {
                 }
 
                 OutlinedButton(
-//                    enabled = true,
+                    enabled = true,
+                    modifier = Modifier.width(305.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = Color(0xFF26A69A)
+                    ),
+                    onClick = {
+                        etapa = "buscarAllOK"
+                    },
+//Habilita o botão somente se o email for valido
+                ) {
+                    Text("Buscar Todos Dados", color = Color.Black)
+                }
+
+                OutlinedButton(
+                    enabled = true,
                     modifier = Modifier.width(305.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
                         containerColor = Color(0xFF26A69A)
@@ -700,37 +967,86 @@ fun Tela() {
                 ) {
                     Text("Limpar Dados", color = Color.Black)
                 }
-            }
-//Se a etapa for igual a "buscar" roda essas funções
-            if (etapa == "buscarOK") {
-                BuscaDados(nomeValido) {
-                    nomeValido = nome
-                    etapa = "inicio"
+
+                OutlinedButton(
+//                    enabled = true,
+                    modifier = Modifier.width(305.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = Color(0xFF26A69A)
+                    ),
+                    onClick = {
+                        trataRetorno(true)
+                    },
+//Habilita o botão somente se o email for valido
+                ) {
+                    Text("Voltar", color = Color.Black)
                 }
             }
 
-//Se a etapa for igual a "salvar" roda essas funções
-            if (etapa == "salvarOK") {
-                SalvaDados(nomeValido) {
-                    nomeValido = nome
-                    etapa = "inicio"
+
+//Se a etapa for igual a "buscar" roda essas funções
+            if (etapa == "buscarOK") {
+//                nomeValido = nome
+                BuscaDados(db, idToShow) {
+                    trataRetorno(true)
+                }
+            }
+
+            if (etapa == "buscarAllOK") {
+                BuscaTodosDados(db) {
+                    trataRetorno(true)
+                }
+            }
+
+//Se a etapa for igual a "inserir" roda essas funções
+            if (etapa == "inserirOK") {
+                nomeValido = nome
+                InsereDados(
+                    db,
+                    nomeValido,
+                    cep,
+                    endereco,
+                    numero,
+                    complemento,
+                    cidade,
+                    estado,
+                    bairro,
+                    ddd,
+                    celular,
+                    email
+                ) {
+                    trataRetorno(true)
                 }
             }
 
 //Se a etapa for igual a "atualizar" roda essas funções
             if (etapa == "atualizarOK") {
-                AtualizaDados(nomeValido) {
-                    nomeValido = nome
-                    etapa = "inicio"
+                nomeValido = nome
+
+                AtualizaDados(
+                    db,
+                    idToShow,
+                    nomeValido,
+                    cep,
+                    endereco,
+                    numero,
+                    complemento,
+                    cidade,
+                    estado,
+                    bairro,
+                    ddd,
+                    celular,
+                    email
+                ) {
+                    trataRetorno(true)
                 }
             }
 
 
 //Se a etapa for igual a "deletar" roda essas funções
             if (etapa == "deletarOK") {
-                DeletaDados(nomeValido) {
-                    nomeValido = nome
-                    etapa = "inicio"
+                DeletaDados(db, idToShow) {
+                    trataRetorno(true)
                 }
             }
         }
@@ -739,25 +1055,106 @@ fun Tela() {
 
 
 @Composable
-fun BuscaDados(nome: String, trataRetorno: () -> Unit) {
-    Text(
-        "$nome, seus dados foram buscados",
-        fontSize = 20.sp,
-        textAlign = TextAlign.Center,
-        color = Color.White
-    )
+fun BuscaDados(db: TaskDBHelper?, idToShow: Int, trataRetorno: (Boolean) -> Unit) {
+    if (db != null) {
+        var item = db.getSingle(idToShow.toLong())
+
+//    var item = db.getSingle(1)
+        Text(
+            text = """
+                |${item.id}
+                |${item.nome}
+                |${item.cep}
+                |${item.rua}, ${item.numero}, ${item.complemento}
+                |${item.bairro}
+                |${item.cidade}-${item.uf}
+                |${item.ddd + item.celular}
+                |${item.email}
+                |""".trimMargin(),
+            fontSize = 20.sp,
+            textAlign = TextAlign.Start,
+            color = Color.White
+        )
+    }
 
     Spacer(modifier = Modifier.padding(16.dp))
 
     Button(onClick = {
-        trataRetorno()
+        trataRetorno(true)
     }) {
         Text("Voltar")
     }
 }
 
 @Composable
-fun SalvaDados(nome: String, trataRetorno: () -> Unit) {
+fun BuscaTodosDados(db: TaskDBHelper?, trataRetorno: (Boolean) -> Unit) {
+    if (db != null) {
+        var lista = db.getAllTasks()
+        for (item in lista) {
+            Text(
+                text = """
+                |${item.id}
+                |${item.nome}
+                |${item.cep}
+                |${item.rua}
+                |${item.numero}
+                |${item.complemento}
+                |${item.bairro}
+                |${item.cidade}, ${item.uf}
+                |${item.ddd + item.celular}
+                |${item.email}
+                |""".trimMargin(),
+                fontSize = 20.sp,
+                textAlign = TextAlign.Start,
+                color = Color.White
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.padding(16.dp))
+
+    Button(onClick = {
+        trataRetorno(true)
+    }) {
+        Text("Voltar")
+    }
+}
+
+@Composable
+fun InsereDados(
+    db: TaskDBHelper?,
+    nome: String,
+    cep: String,
+    endereco: String,
+    numero: String,
+    complemento: String,
+    cidade: String,
+    estado: String,
+    bairro: String,
+    ddd: String,
+    celular: String,
+    email: String,
+    trataRetorno: (Boolean) -> Unit
+) {
+
+    if (db != null) {
+        db.addTaks(
+            TaskDBHelper.Task(
+                -1,
+                nome,
+                cep,
+                endereco,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                estado,
+                ddd,
+                celular,
+                email
+            )
+        )
+    }
     Text(
         "$nome, seus dados foram salvos",
         fontSize = 20.sp,
@@ -768,14 +1165,48 @@ fun SalvaDados(nome: String, trataRetorno: () -> Unit) {
     Spacer(modifier = Modifier.padding(16.dp))
 
     Button(onClick = {
-        trataRetorno()
+        trataRetorno(true)
     }) {
         Text("Voltar")
     }
 }
 
 @Composable
-fun AtualizaDados(nome: String, trataRetorno: () -> Unit) {
+fun AtualizaDados(
+    db: TaskDBHelper?,
+    idToShow: Int,
+    nome: String,
+    cep: String,
+    endereco: String,
+    numero: String,
+    complemento: String,
+    cidade: String,
+    estado: String,
+    bairro: String,
+    ddd: String,
+    celular: String,
+    email: String,
+    trataRetorno: (Boolean) -> Unit
+) {
+    if (db != null) {
+        db.updateTask(
+            TaskDBHelper.Task(
+                idToShow.toLong(),
+                nome,
+                cep,
+                endereco,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                estado,
+                ddd,
+                celular,
+                email
+            )
+        )
+    }
+
     Text(
         "$nome, seus dados foram atualizados",
         fontSize = 20.sp,
@@ -786,16 +1217,19 @@ fun AtualizaDados(nome: String, trataRetorno: () -> Unit) {
     Spacer(modifier = Modifier.padding(16.dp))
 
     Button(onClick = {
-        trataRetorno()
+        trataRetorno(true)
     }) {
         Text("Voltar")
     }
 }
 
 @Composable
-fun DeletaDados(nome: String, trataRetorno: () -> Unit) {
+fun DeletaDados(db: TaskDBHelper?, idToShow: Int, trataRetorno: (Boolean) -> Unit) {
+    if (db != null) {
+        db.deleteTask(idToShow.toLong())
+    }
     Text(
-        "$nome, seus dados foram deletados",
+        "$idToShow, seus dados foram deletados",
         fontSize = 20.sp,
         textAlign = TextAlign.Center,
         color = Color.White
@@ -804,7 +1238,7 @@ fun DeletaDados(nome: String, trataRetorno: () -> Unit) {
     Spacer(modifier = Modifier.padding(16.dp))
 
     Button(onClick = {
-        trataRetorno()
+        trataRetorno(true)
     }) {
         Text("Voltar")
     }
@@ -913,7 +1347,7 @@ fun showToast(context: Context, message: String) {
 @Composable
 fun GreetingPreview() {
     Ac_05_crudTheme {
-        Tela()
+        TelaOpcoes(null)
     }
 }
 
@@ -1030,8 +1464,8 @@ class TaskDBHelper(context: Context) :
                 "$COLUMN_BAIRRO TEXT," +
                 "$COLUMN_CIDADE TEXT," +
                 "$COLUMN_UF TEXT," +
-                "$COLUMN_DDD INTEGER," +
-                "$COLUMN_CELULAR INTEGER," +
+                "$COLUMN_DDD TEXT," +
+                "$COLUMN_CELULAR TEXT," +
                 "$COLUMN_EMAIL TEXT)"
 
         db?.execSQL(createTable)
