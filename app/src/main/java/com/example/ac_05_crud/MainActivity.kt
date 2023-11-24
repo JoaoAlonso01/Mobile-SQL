@@ -141,6 +141,9 @@ fun TelaOpcoes(db: TaskDBHelper?) {
                             opcao = "buscar"
                             telaOpcoes = false
                             buscar = true
+                            inserir = false
+                            atualizar = false
+                            deletar = false
                         },
 //Habilita o botão somente se o email for valido
                     ) {
@@ -169,7 +172,10 @@ fun TelaOpcoes(db: TaskDBHelper?) {
                         onClick = {
                             opcao = "inserir"
                             telaOpcoes = false
+                            buscar = false
                             inserir = true
+                            atualizar = false
+                            deletar = false
                         },
 //Habilita o botão somente se o email for valido
                     ) {
@@ -200,7 +206,10 @@ fun TelaOpcoes(db: TaskDBHelper?) {
                         onClick = {
                             opcao = "atualizar"
                             telaOpcoes = false
+                            buscar = false
+                            inserir = false
                             atualizar = true
+                            deletar = false
                         },
 //Habilita o botão somente se o email for valido
                     ) {
@@ -229,6 +238,9 @@ fun TelaOpcoes(db: TaskDBHelper?) {
                         onClick = {
                             opcao = "deletar"
                             telaOpcoes = false
+                            buscar = false
+                            inserir = false
+                            atualizar = false
                             deletar = true
                         },
 //Habilita o botão somente se o email for valido
@@ -342,6 +354,9 @@ fun Tela(
         mutableStateOf(false)
     }
 
+//    var buscarBtn by remember {
+//        mutableStateOf(buscar)
+//    }
 
 //lista com todos os DDDS validos para o Brasil
     val ddds = arrayOf(
@@ -457,7 +472,6 @@ fun Tela(
                 }
                 if (idField == true || idField == false) {
 //                    telaInicial = false
-
                 }
 
                 if (idField) {
@@ -514,7 +528,8 @@ fun Tela(
 
                 if (nome.length > 0 && !validateName(nome)) {
                     Text(
-                        "Nome inválido", color = Color.Red
+                        "Nome inválido", color = Color.Red,
+                        fontWeight = FontWeight.ExtraBold
                     )
                 }
 
@@ -578,6 +593,7 @@ fun Tela(
                     Text(
                         "CEP inválido",
                         color = Color.Red,
+                        fontWeight = FontWeight.ExtraBold,
                         modifier = Modifier.align(Alignment.Start)
                     )
                 }
@@ -781,6 +797,7 @@ fun Tela(
                     Text(
                         "DDD inválido",
                         color = Color.Red,
+                        fontWeight = FontWeight.ExtraBold,
                         modifier = Modifier.align(Alignment.Start)
                     )
                 }
@@ -790,6 +807,7 @@ fun Tela(
                     Text(
                         "Número de celular inválido",
                         color = Color.Red,
+                        fontWeight = FontWeight.ExtraBold,
                         modifier = Modifier.align(Alignment.End)
                     )
                 }
@@ -801,6 +819,7 @@ fun Tela(
                         Text(
                             "Celular deve começar com 9 ",
                             color = Color.Red,
+                            fontWeight = FontWeight.ExtraBold,
                             modifier = Modifier.align(Alignment.End)
                         )
                     }
@@ -829,7 +848,10 @@ fun Tela(
 //Se o email nao for vazio e o email nao for valido
                 if (email.isNotBlank() && !isValid(email)) {
 //Deixa uma mensagem email invalido na tela até for valido
-                    Text("Email inválido", color = Color.Red)
+                    Text(
+                        "Email inválido", color = Color.Red,
+                        fontWeight = FontWeight.ExtraBold
+                    )
                 }
 
                 Spacer(modifier = Modifier.padding(16.dp))
@@ -837,6 +859,10 @@ fun Tela(
 //Criando um botao para enviar o codigo de verificação e verificar algumas informações preenchidas
 
                 Row {
+//                    if (id == "".toInt()) {
+//                        buscarBtn = false
+//                    }
+
                     OutlinedButton(
                         enabled = buscar,
                         modifier = Modifier.width(150.dp),
@@ -844,7 +870,6 @@ fun Tela(
                             containerColor = Color(0xFF26A69A)
                         ),
                         onClick = {
-// Se todas essas validações passar ele muda para a tela 2
                             etapa = "buscarOK"
                             id = value.toInt()
                             idToShow = id
@@ -870,7 +895,6 @@ fun Tela(
                                 ) && celular.length == 9 && celular[0] == '9'
                             ) {
                                 etapa = "inserirOK"
-
                             }
                         },
 //Habilita o botão somente se o email for valido
@@ -1059,9 +1083,17 @@ fun BuscaDados(db: TaskDBHelper?, idToShow: Int, trataRetorno: (Boolean) -> Unit
     if (db != null) {
         var item = db.getSingle(idToShow.toLong())
 
-//    var item = db.getSingle(1)
-        Text(
-            text = """
+        if (item.id.toInt() == -1) {
+            Text(
+                text = "ID inválido ou removido",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Start,
+                color = Color.Red,
+                fontWeight = FontWeight.ExtraBold
+            )
+        } else {
+            Text(
+                text = """
                 |${item.id}
                 |${item.nome}
                 |${item.cep}
@@ -1071,10 +1103,11 @@ fun BuscaDados(db: TaskDBHelper?, idToShow: Int, trataRetorno: (Boolean) -> Unit
                 |${item.ddd + item.celular}
                 |${item.email}
                 |""".trimMargin(),
-            fontSize = 20.sp,
-            textAlign = TextAlign.Start,
-            color = Color.White
-        )
+                fontSize = 20.sp,
+                textAlign = TextAlign.Start,
+                color = Color.White
+            )
+        }
     }
 
     Spacer(modifier = Modifier.padding(16.dp))
@@ -1189,30 +1222,43 @@ fun AtualizaDados(
     trataRetorno: (Boolean) -> Unit
 ) {
     if (db != null) {
-        db.updateTask(
-            TaskDBHelper.Task(
-                idToShow.toLong(),
-                nome,
-                cep,
-                endereco,
-                numero,
-                complemento,
-                bairro,
-                cidade,
-                estado,
-                ddd,
-                celular,
-                email
-            )
-        )
-    }
+        var item = db.getSingle(idToShow.toLong())
 
-    Text(
-        "$nome, seus dados foram atualizados",
-        fontSize = 20.sp,
-        textAlign = TextAlign.Center,
-        color = Color.White
-    )
+        if (item.id.toInt() == -1) {
+            Text(
+                text = "ID inválido ou removido. Faça uma busca por ID antes de atualizar os dados.",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Start,
+                color = Color.Red,
+                fontWeight = FontWeight.ExtraBold
+            )
+        } else {
+            db.updateTask(
+                TaskDBHelper.Task(
+                    idToShow.toLong(),
+                    nome,
+                    cep,
+                    endereco,
+                    numero,
+                    complemento,
+                    bairro,
+                    cidade,
+                    estado,
+                    ddd,
+                    celular,
+                    email
+                )
+            )
+            Text(
+                "$nome, seus dados foram atualizados",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = Color.White
+            )
+        }
+
+
+    }
 
     Spacer(modifier = Modifier.padding(16.dp))
 
@@ -1226,14 +1272,27 @@ fun AtualizaDados(
 @Composable
 fun DeletaDados(db: TaskDBHelper?, idToShow: Int, trataRetorno: (Boolean) -> Unit) {
     if (db != null) {
-        db.deleteTask(idToShow.toLong())
+        var item = db.getSingle(idToShow.toLong())
+
+        if (item.id.toInt() == -1) {
+            Text(
+                text = "ID inválido ou removido. Faça uma busca por ID antes de deletar os dados.",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Start,
+                color = Color.Red,
+                fontWeight = FontWeight.ExtraBold
+            )
+        } else {
+            db.deleteTask(idToShow.toLong())
+
+            Text(
+                "Os dados do ID: $idToShow foram deletados com sucesso",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = Color.White
+            )
+        }
     }
-    Text(
-        "$idToShow, seus dados foram deletados",
-        fontSize = 20.sp,
-        textAlign = TextAlign.Center,
-        color = Color.White
-    )
 
     Spacer(modifier = Modifier.padding(16.dp))
 
