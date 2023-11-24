@@ -140,7 +140,7 @@ fun TelaOpcoes(db: TaskDBHelper?) {
                         onClick = {
                             opcao = "buscar"
                             telaOpcoes = false
-                            buscar = true
+                            buscar = false
                             inserir = false
                             atualizar = false
                             deletar = false
@@ -208,7 +208,7 @@ fun TelaOpcoes(db: TaskDBHelper?) {
                             telaOpcoes = false
                             buscar = false
                             inserir = false
-                            atualizar = true
+                            atualizar = false
                             deletar = false
                         },
 //Habilita o botão somente se o email for valido
@@ -241,7 +241,7 @@ fun TelaOpcoes(db: TaskDBHelper?) {
                             buscar = false
                             inserir = false
                             atualizar = false
-                            deletar = true
+                            deletar = false
                         },
 //Habilita o botão somente se o email for valido
                     ) {
@@ -354,9 +354,15 @@ fun Tela(
         mutableStateOf(false)
     }
 
-//    var buscarBtn by remember {
-//        mutableStateOf(buscar)
-//    }
+    var buscarBtn by remember {
+        mutableStateOf(buscar)
+    }
+    var atualizarBtn by remember {
+        mutableStateOf(atualizar)
+    }
+    var deletarBtn by remember {
+        mutableStateOf(deletar)
+    }
 
 //lista com todos os DDDS validos para o Brasil
     val ddds = arrayOf(
@@ -451,7 +457,7 @@ fun Tela(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
             modifier = Modifier
-                .padding(16.dp)
+                .padding(53.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             if (etapa == "inicio") {
@@ -470,9 +476,6 @@ fun Tela(
                 if (opcao == "buscar" || opcao == "atualizar" || opcao == "deletar") {
                     idField = true
                 }
-                if (idField == true || idField == false) {
-//                    telaInicial = false
-                }
 
                 if (idField) {
                     OutlinedTextField(
@@ -480,10 +483,13 @@ fun Tela(
                         value = value,
                         placeholder = { Text("ID") },
                         label = { Text("ID") },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number
+                        ),
                         modifier = Modifier
                             .height(70.dp)
                             .width(70.dp)
-                            .alignBy { it.measuredHeight },
+                            .align(Alignment.Start),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             unfocusedBorderColor = Black,
                             focusedBorderColor = Black,
@@ -493,10 +499,23 @@ fun Tela(
                             unfocusedLabelColor = White
                         ),
                         onValueChange = {
-
-//                            if (it.isDigitsOnly()) {
                             value = it
-//                            }
+
+                            if (value.isEmpty()) {
+                                buscarBtn = false
+                                atualizarBtn = false
+                                deletarBtn = false
+                            }
+
+                            if (value.isNotBlank() && opcao == "buscar") {
+                                buscarBtn = true
+                            }
+                            if (value.isNotBlank() && opcao == "atualizar") {
+                                atualizarBtn = true
+                            }
+                            if (value.isNotBlank() && opcao == "deletar") {
+                                deletarBtn = true
+                            }
                         },
                     )
                 }
@@ -859,12 +878,12 @@ fun Tela(
 //Criando um botao para enviar o codigo de verificação e verificar algumas informações preenchidas
 
                 Row {
-//                    if (id == "".toInt()) {
+//                    if (value.isBlank() ) {
 //                        buscarBtn = false
 //                    }
 
                     OutlinedButton(
-                        enabled = buscar,
+                        enabled = buscarBtn,
                         modifier = Modifier.width(150.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color(0xFF26A69A)
@@ -905,7 +924,7 @@ fun Tela(
 
                 Row {
                     OutlinedButton(
-                        enabled = atualizar,
+                        enabled = atualizarBtn,
                         modifier = Modifier.width(150.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color(0xFF26A69A)
@@ -931,7 +950,7 @@ fun Tela(
                     Spacer(modifier = Modifier.padding(4.dp))
 
                     OutlinedButton(
-                        enabled = deletar,
+                        enabled = deletarBtn,
                         modifier = Modifier.width(150.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color(0xFF26A69A)
