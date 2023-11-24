@@ -363,6 +363,9 @@ fun Tela(
     var deletarBtn by remember {
         mutableStateOf(deletar)
     }
+    var dadosField by remember {
+        mutableStateOf(true)
+    }
 
 //lista com todos os DDDS validos para o Brasil
     val ddds = arrayOf(
@@ -520,8 +523,13 @@ fun Tela(
                     )
                 }
 
+                if (opcao == "buscar" || opcao == "deletar") {
+                    dadosField = false
+                }
+
 //Criando a text field do nome
                 OutlinedTextField(
+                    enabled = dadosField,
                     value = nome,
                     placeholder = { Text("Nome Completo") },
                     label = { Text("Nome Completo") },
@@ -557,6 +565,7 @@ fun Tela(
 
 //Criando o textfield do cep
                 OutlinedTextField(
+                    enabled = dadosField,
                     value = cep,
                     placeholder = { Text("12345678") },
                     label = { Text("CEP") },
@@ -760,6 +769,7 @@ fun Tela(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     OutlinedTextField(
+                        enabled = dadosField,
                         value = ddd,
                         placeholder = { Text("00") },
                         label = { Text("DDD") },
@@ -786,6 +796,7 @@ fun Tela(
                     Spacer(modifier = Modifier.padding(4.dp))
 
                     OutlinedTextField(
+                        enabled = dadosField,
                         value = celular,
                         placeholder = { Text("123456789") },
                         label = { Text("Celular") },
@@ -846,6 +857,7 @@ fun Tela(
 
 // Criando a textField para email
                 OutlinedTextField(
+                    enabled = dadosField,
                     value = email,
                     placeholder = { Text("email@dominio.com.br") },
                     label = { Text("E-mail") },
