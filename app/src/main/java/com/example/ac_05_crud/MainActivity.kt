@@ -582,7 +582,7 @@ fun Tela(
                         if (it.isDigitsOnly()) {
                             cep = it
                         }
-                        if (cep.length <= 8) {
+                        if (cep.length <= 8 || cep.length > 8) {
                             exibir = false
                         }
 
@@ -1110,10 +1110,10 @@ fun BuscaDados(db: TaskDBHelper?, idToShow: Int, trataRetorno: (Boolean) -> Unit
                 |${item.id}
                 |${item.nome}
                 |${item.cep}
-                |${item.rua}, ${item.numero}, ${item.complemento}
+                |${item.rua}, ${item.numero} - ${item.complemento}
                 |${item.bairro}
                 |${item.cidade}-${item.uf}
-                |${item.ddd + item.celular}
+                |(${item.ddd}) ${item.celular}
                 |${item.email}
                 |""".trimMargin(),
                 fontSize = 20.sp,
@@ -1142,12 +1142,10 @@ fun BuscaTodosDados(db: TaskDBHelper?, trataRetorno: (Boolean) -> Unit) {
                 |${item.id}
                 |${item.nome}
                 |${item.cep}
-                |${item.rua}
-                |${item.numero}
-                |${item.complemento}
+                |${item.rua}, ${item.numero} - ${item.complemento}
                 |${item.bairro}
-                |${item.cidade}, ${item.uf}
-                |${item.ddd + item.celular}
+                |${item.cidade}-${item.uf}
+                |(${item.ddd}) ${item.celular}
                 |${item.email}
                 |""".trimMargin(),
                 fontSize = 20.sp,
