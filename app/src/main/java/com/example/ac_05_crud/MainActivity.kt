@@ -290,7 +290,6 @@ fun Tela(
     inserir: Boolean,
     atualizar: Boolean,
     deletar: Boolean,
-    //telaInicial: Boolean,
     trataRetorno: (Boolean) -> Unit
 ) {
 //Criando variaveis para controle das TextFields
@@ -443,7 +442,6 @@ fun Tela(
     var etapa by remember {
         mutableStateOf("inicio")
     }
-
 
 //Criando um surface para preencher a tela inteira (Tela de fundo)
     Surface(
@@ -624,7 +622,6 @@ fun Tela(
 
 //se a variavel exibir for verdadeira ela retorna um erro se tiver erro e se estiver tudo certo retorna as textfields com as informações do via cep
                 if (exibir) {
-//                    (Text(error))
 
                     OutlinedTextField(
                         value = endereco,
@@ -643,8 +640,7 @@ fun Tela(
                             disabledLabelColor = White
                         ),
                         onValueChange = { endereco = it },
-
-                        )
+                    )
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -670,7 +666,6 @@ fun Tela(
                                     numero = it
                                 }
                             },
-
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Number
                             )
@@ -886,9 +881,6 @@ fun Tela(
 //Criando um botao para enviar o codigo de verificação e verificar algumas informações preenchidas
 
                 Row {
-//                    if (value.isBlank() ) {
-//                        buscarBtn = false
-//                    }
 
                     OutlinedButton(
                         enabled = buscarBtn,
@@ -966,12 +958,7 @@ fun Tela(
                         onClick = {
 // Se todas essas validações passar ele muda para a tela 2
 
-//                            if (ddd in ddds && ddd.isNotBlank() && cep.length == 8 && exibir && validateName(
-//                                    nome
-//                                ) && celular.length == 9 && celular[0] == '9'
-//                            ) {
                             etapa = "deletarOK"
-//                            }
                             id = value.toInt()
                             idToShow = id
 
@@ -1020,7 +1007,6 @@ fun Tela(
                 }
 
                 OutlinedButton(
-//                    enabled = true,
                     modifier = Modifier.width(305.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
                         containerColor = Color(0xFF26A69A)
@@ -1437,70 +1423,6 @@ fun GreetingPreview() {
     }
 }
 
-@Composable
-fun crudFunction(db: TaskDBHelper?) {
-    if (db != null) {
-        Column()
-        {
-            db.addTaks(
-                TaskDBHelper.Task(
-                    -1,
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    ""
-                )
-            )
-            db.updateTask(
-                TaskDBHelper.Task(
-                    2,
-                    "Bruno",
-                    "60192022",
-                    "Rua",
-                    "123",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    ""
-                )
-            )
-            db.deleteTask(4)
-
-            var lista = db.getAllTasks()
-            for (item in lista) {
-                Text(
-                    text = """${item.id} - ${item.nome} - CEP: ${item.cep}
-                    | ${item.rua}", ${item.numero}, ${item.complemento}
-                    | ${item.bairro}
-                    | ${item.cidade}, ${item.uf}
-                    | ${item.ddd + item.celular}
-                    | ${item.email}""".trimMargin()
-                )
-            }
-
-            var item = db.getSingle(1)
-            Text(
-                text = """${item.id} - ${item.nome} - CEP: ${item.cep}
-                    | ${item.rua}", ${item.numero}, ${item.complemento}
-                    | ${item.bairro}
-                    | ${item.cidade}, ${item.uf}
-                    | ${item.ddd + item.celular}
-                    | ${item.email}"""
-            )
-        }
-    }
-}
-
 class TaskDBHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -1535,8 +1457,6 @@ class TaskDBHelper(context: Context) :
         const val COLUMN_DDD = "ddd"
         const val COLUMN_CELULAR = "celular"
         const val COLUMN_EMAIL = "email"
-
-
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
