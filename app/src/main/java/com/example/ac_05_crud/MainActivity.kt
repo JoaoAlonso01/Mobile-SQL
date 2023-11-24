@@ -106,8 +106,6 @@ fun TelaOpcoes(db: TaskDBHelper?) {
             color = Color(0xFF006064),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
-
         ) {
 //Definindo o aplicativo para deixar os elementos em coluna (um de baixo do outro)
             Column(
@@ -452,8 +450,6 @@ fun Tela(
         color = Color(0xFF006064),
         modifier = Modifier
             .fillMaxSize()
-            .padding(1.dp)
-
     ) {
 //Definindo o aplicativo para deixar os elementos em coluna (um de baixo do outro)
         Column(
